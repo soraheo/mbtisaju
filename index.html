@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Korea Soul Map · MBTI + Saju Report</title>
+<style>
+  :root{
+    --bg1:#0f172a; --bg2:#1e293b;
+    --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e7e9ef;
+    --brand:#6d5efc; --brand2:#9b8cff; --accent:#ff7a59;
+    --wood:#34a853; --fire:#ea4335; --earth:#d9a441; --metal:#9aa3b2; --water:#3b82f6;
+    --soft:#f6f7fb;
+    --radius:18px; --shadow:0 18px 40px -20px rgba(15,23,42,.45);
+    --font:'Segoe UI',Roboto,'Helvetica Neue',Arial,'Apple SD Gothic Neo',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:var(--font); color:var(--ink);
+    background:linear-gradient(160deg,#eef1ff 0%,#f7f0ff 45%,#fff5f0 100%);
+    min-height:100vh; line-height:1.55;
+  }
+  .wrap{max-width:880px; margin:0 auto; padding:24px 18px 80px;}
+  header.top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:22px; flex-wrap:wrap;}
+  .logo{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.3px;}
+  .logo .dot{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--accent));display:grid;place-items:center;color:#fff;font-size:18px;box-shadow:var(--shadow);}
+  .logo small{display:block;font-weight:500;color:var(--muted);font-size:11px;letter-spacing:.5px}
+  .langtoggle{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;overflow:hidden;box-shadow:var(--shadow)}
+  .langtoggle button{border:0;background:transparent;padding:8px 16px;font-weight:700;color:var(--muted);cursor:pointer;font-size:13px}
+  .langtoggle button.active{background:var(--brand);color:#fff}
+
+  .hero{text-align:center;margin:8px 0 26px}
+  .hero h1{font-size:30px;margin:0 0 8px;line-height:1.2;background:linear-gradient(120deg,#5b4bf0,#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);margin:0;font-size:15px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin-bottom:20px}
+  .card h2{font-size:18px;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+  .card .sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  label.field{display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:6px}
+  .field small{font-weight:400;color:var(--muted)}
+  input,select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+  input:focus,select:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(109,94,252,.15)}
+  .checkrow{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--muted)}
+  .checkrow input{width:auto}
+
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:20px;padding:15px;border:0;border-radius:14px;background:linear-gradient(135deg,var(--brand),#8b5cf6);color:#fff;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 14px 30px -12px rgba(109,94,252,.7);transition:transform .12s}
+  .btn:active{transform:scale(.99)}
+  .btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--line);box-shadow:none}
+
+  .mbtihint{font-size:12px;color:var(--muted);margin-top:6px}
+  .mbtihint a{color:var(--brand);text-decoration:none;font-weight:600}
+  .quizlink{margin-top:8px;width:100%;border:1px dashed var(--brand);background:rgba(109,94,252,.06);color:var(--brand);border-radius:12px;padding:12px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;transition:background .12s}
+  .quizlink:hover{background:rgba(109,94,252,.14)}
+
+  .overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);z-index:50;padding:18px}
+  .overlay.show{display:flex;align-items:center;justify-content:center}
+  .quizcard{background:#fff;border-radius:20px;max-width:460px;width:100%;padding:22px;box-shadow:var(--shadow);max-height:92vh;overflow:auto}
+  .quizhead{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:17px;margin-bottom:14px}
+  .quizhead button{border:0;background:var(--soft);width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:15px;color:var(--muted)}
+  .quizprog{height:8px;background:var(--soft);border-radius:999px;overflow:hidden;margin-bottom:8px}
+  #quizBar{height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .3s}
+  #quizCount{font-size:12px;color:var(--muted);margin-bottom:16px;font-weight:600;letter-spacing:.3px}
+  .quizq{font-size:13px;color:var(--muted);margin-bottom:12px;font-weight:600}
+  .quizopts{display:flex;flex-direction:column;gap:10px}
+  .quizopts button{border:1.5px solid var(--line);background:#fff;border-radius:14px;padding:15px 16px;font-size:15px;text-align:left;cursor:pointer;font-family:inherit;color:var(--ink);line-height:1.4;transition:all .12s}
+  .quizopts button:hover{border-color:var(--brand);background:rgba(109,94,252,.05);transform:translateY(-1px)}
+  .quizresult{display:none;text-align:center;padding:8px 0 2px}
+  .quizresult.show{display:block}
+  .quizresult .big{font-size:36px;font-weight:800;letter-spacing:2px;background:linear-gradient(120deg,#5b4bf0,#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent;margin:6px 0}
+  .quizresult .nick{color:var(--muted);font-size:14px;margin-bottom:16px}
+
+  .explain{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden}
+  .explain summary{list-style:none;cursor:pointer;padding:16px 20px;font-weight:700;font-size:14.5px;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .explain summary::-webkit-details-marker{display:none}
+  .explain .chev{color:var(--brand);transition:transform .2s;font-size:16px;flex-shrink:0}
+  .explain[open] .chev{transform:rotate(180deg)}
+  .explainBody{padding:0 20px 20px}
+  .explainBody>p{margin:0 0 14px;font-size:14px;color:#374151}
+  .explainGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px}
+  @media(max-width:560px){.explainGrid{grid-template-columns:1fr}}
+  .explainGrid>div{background:var(--soft);border-radius:12px;padding:12px 14px}
+  .explainGrid b{display:block;font-size:13px;margin-bottom:4px}
+  .explainGrid span{font-size:12.5px;color:var(--muted);line-height:1.5}
+  .explainWhy{background:linear-gradient(135deg,rgba(109,94,252,.09),rgba(255,122,89,.09));border-radius:12px;padding:13px 15px;font-size:13px;color:#374151;margin:0}
+  .pillarsHelp{font-size:12.5px;color:var(--muted);background:var(--soft);border-radius:12px;padding:11px 14px;margin:14px 0 0;line-height:1.55}
+  #shareCanvas svg{width:100%;height:auto;max-width:380px;display:block;margin:0 auto;border-radius:18px;box-shadow:0 16px 34px -16px rgba(15,23,42,.5)}
+
+  /* premium / paywall */
+  .premium{position:relative;overflow:hidden}
+  #premiumBody{transition:filter .3s}
+  #premiumCard.locked #premiumBody{filter:blur(7px);pointer-events:none;user-select:none;min-height:300px}
+  #premiumLock{display:none}
+  #premiumCard.locked #premiumLock{display:flex}
+  #premiumLock{position:absolute;inset:0;align-items:center;justify-content:center;padding:20px;background:linear-gradient(180deg,rgba(247,247,251,.35),rgba(247,247,251,.95) 55%)}
+  .lockInner{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:24px 22px;max-width:370px;width:100%;text-align:center}
+  .lockIcon{font-size:30px}
+  .lockTitle{font-weight:800;font-size:18px;margin:6px 0 14px}
+  .lockList{list-style:none;padding:0;margin:0 0 18px;text-align:left;font-size:13.5px;color:#374151;display:flex;flex-direction:column;gap:8px}
+  .unlockBtn{background:linear-gradient(135deg,#ff7a59,#ff5e8a)!important;box-shadow:0 14px 30px -12px rgba(255,94,138,.7)!important}
+  .lockNote{font-size:11px;color:var(--muted);margin-top:11px}
+  .pblock{padding:14px 0;border-top:1px solid var(--line)}
+  .pblock:first-child{border-top:0;padding-top:2px}
+  .pblock h4{margin:0 0 6px;font-size:15px}
+  .pblock p{margin:0 0 8px;font-size:14px;color:#374151;line-height:1.55}
+  .pchips{display:flex;gap:8px;flex-wrap:wrap}
+  .pchip{font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px}
+  .pchip.good{background:rgba(52,168,83,.12);color:#2e7d44}
+  .pchip.warn{background:rgba(217,164,65,.18);color:#9a6b00}
+  .pmatch{font-size:13.5px;color:#374151;margin:4px 0 0}
+  .psmall{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+  .lucktable{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+  .lucktable>div{background:var(--soft);border-radius:10px;padding:9px 12px;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+  .lucktable span{color:var(--muted)}
+  .unlocked-badge{display:inline-block;font-size:11px;font-weight:700;color:#2e7d44;background:rgba(52,168,83,.12);padding:3px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
+
+  /* archetype (sajufy-style memorable name) */
+  .archetype{text-align:center;margin:0 0 16px}
+  .archlabel{font-size:11px;letter-spacing:3px;color:var(--muted);font-weight:800}
+  .archname{font-size:26px;font-weight:800;background:linear-gradient(120deg,#5b4bf0,#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:3px;line-height:1.2}
+  /* teaser + locked rows (sajufy-style funnel) */
+  .pteaser{background:var(--soft);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+  .pteaser-label{font-size:11px;letter-spacing:2px;font-weight:800;color:var(--brand);margin-bottom:6px}
+  .pteaser p{margin:0;font-size:14px;color:#374151;line-height:1.55}
+  .lockedrow{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:linear-gradient(90deg,rgba(109,94,252,.05),transparent)}
+  .lr-ic{font-size:18px;opacity:.85;flex-shrink:0}
+  .lr-body{flex:1;min-width:0}
+  .lr-t{font-weight:700;font-size:14px;color:var(--ink)}
+  .lr-prev{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;filter:blur(3.5px);user-select:none;margin-top:2px}
+  .lr-lock{font-size:15px;opacity:.55;flex-shrink:0}
+  #premiumCTA{margin-top:8px;text-align:center}
+  /* theme toggle + dark premium theme */
+  .topright{display:flex;align-items:center;gap:10px}
+  .themetoggle{border:1px solid var(--line);background:#fff;border-radius:999px;width:42px;height:38px;font-size:16px;cursor:pointer;box-shadow:var(--shadow);line-height:1}
+  body.dark{--card:#1c1636;--ink:#ece8fb;--muted:#a79fce;--line:rgba(255,255,255,.10);--soft:rgba(255,255,255,.06);background:linear-gradient(160deg,#0f0b24 0%,#1a1140 50%,#241046 100%);}
+  body.dark input,body.dark select{background:rgba(255,255,255,.05);color:var(--ink)}
+  body.dark .langtoggle,body.dark .themetoggle,body.dark .explain,body.dark .quizcard,body.dark .mood button,body.dark .quizopts button{background:var(--card)}
+  body.dark .btn.ghost{background:var(--card);color:var(--brand2)}
+  body.dark .section p,body.dark .pblock p,body.dark ul.tips li,body.dark .explainBody>p,body.dark .explainWhy,body.dark .pteaser p,body.dark .pmatch,body.dark #balanceText{color:#d3cdf0 !important}
+  body.dark .explainWhy{background:linear-gradient(135deg,rgba(155,140,255,.12),rgba(255,122,89,.10))}
+  body.dark #moodResult{background:linear-gradient(135deg,rgba(155,140,255,.14),rgba(255,122,89,.12))}
+  body.dark .pchip.good{background:rgba(52,168,83,.22)}
+  body.dark .pchip.warn{background:rgba(217,164,65,.24)}
+  body.dark #bars line,body.dark #bars polygon[fill="none"]{stroke:rgba(255,255,255,.15)}
+
+  /* report */
+  #report{display:none}
+  .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 4px}
+  .pillar{border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;background:var(--soft)}
+  .pillar .role{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+  .pillar .han{font-size:30px;line-height:1.1;font-weight:700}
+  .pillar .ro{font-size:12px;color:var(--muted);margin-top:3px}
+  .pillar .br{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
+  .chip{display:inline-block;font-size:10px;padding:2px 8px;border-radius:999px;color:#fff;margin-top:6px;font-weight:700}
+  .el-wood{background:var(--wood)} .el-fire{background:var(--fire)} .el-earth{background:var(--earth)} .el-metal{background:var(--metal)} .el-water{background:var(--water)}
+
+  .bars{margin-top:8px}
+  .bar{display:flex;align-items:center;gap:10px;margin:8px 0}
+  .bar .name{width:64px;font-size:13px;font-weight:600}
+  .bar .track{flex:1;height:14px;background:var(--soft);border-radius:999px;overflow:hidden}
+  .bar .fill{height:100%;border-radius:999px;transition:width .6s}
+  .bar .val{width:28px;text-align:right;font-size:12px;color:var(--muted)}
+
+  .section{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+  .section:first-child{border-top:0;margin-top:0;padding-top:0}
+  .section h3{font-size:16px;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+  .section p{margin:0 0 10px;font-size:14.5px;color:#374151}
+  .tag{display:inline-block;background:rgba(109,94,252,.1);color:var(--brand);font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;margin:0 6px 6px 0}
+  ul.tips{margin:6px 0 0;padding-left:18px}
+  ul.tips li{margin-bottom:6px;font-size:14px;color:#374151}
+
+  .mood{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .mood button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-size:14px;cursor:pointer;font-weight:600;transition:all .12s}
+  .mood button:hover{border-color:var(--brand)}
+  .mood button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  #moodResult{display:none;margin-top:10px;padding:14px 16px;background:linear-gradient(135deg,#eef1ff,#fff5f0);border-radius:14px;font-size:14.5px}
+
+  .affirm{background:linear-gradient(135deg,#1e293b,#4c1d95);color:#fff;border-radius:16px;padding:20px;text-align:center;margin-top:8px}
+  .affirm .q{font-size:18px;font-weight:600;line-height:1.4}
+  .affirm .s{font-size:12px;opacity:.7;margin-top:8px;letter-spacing:.5px}
+
+  .breath{display:flex;align-items:center;gap:16px;margin-top:14px;background:var(--soft);border-radius:14px;padding:14px 16px}
+  .breath .circle{width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,var(--brand2),var(--brand));animation:bre 8s ease-in-out infinite;flex-shrink:0}
+  @keyframes bre{0%,100%{transform:scale(.7);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+  .breath div p{margin:0;font-size:13.5px}
+
+  .disclaimer{font-size:12px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+  @media(max-width:480px){.actions{grid-template-columns:1fr}}
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
+  footer b{color:var(--brand)}
+  @media print{
+    body{background:#fff} .langtoggle,.btn,.mood,#inputCard,.actions,.breath .circle{display:none!important}
+    .card{box-shadow:none;border:1px solid #ddd;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">
+      <span class="dot">✦</span>
+      <div>Korea Soul Map<small data-i="brandsub">MBTI × Saju · by Vamos Travel Korea</small></div>
+    </div>
+    <div class="topright">
+      <button class="themetoggle" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+      <div class="langtoggle">
+        <button id="btnEn" class="active" onclick="setLang('en')">EN</button>
+        <button id="btnEs" onclick="setLang('es')">ES</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1 data-i="heroTitle">Discover your Korean Soul Map</h1>
+    <p data-i="heroSub">Your MBTI + Korean Saju (Four Pillars), turned into one clear report — with a personal mental-care guide.</p>
+  </div>
+
+  <!-- WHAT IS SAJU -->
+  <details class="explain" id="sajuExplain">
+    <summary><span data-i="explainQ">🇰🇷 New to Saju? Read the 30-second intro</span><span class="chev">⌄</span></summary>
+    <div class="explainBody">
+      <p data-i="explainP1">Saju (사주) — the "Four Pillars of Destiny" — is traditional Korean astrology. It maps the energy of the year, month, day and hour you were born into four "pillars," each written with characters tied to the five elements. The balance between them describes your natural temperament, relationships, money flow and life rhythm. Koreans still check it before marriages, business launches and big decisions.</p>
+      <div class="explainGrid">
+        <div><b data-i="exA_t">Like a birth chart</b><span data-i="exA_b">It's the Korean cousin of your zodiac sign or birth chart — read from your exact birth date and time, not just your month.</span></div>
+        <div><b data-i="exB_t">Why time matters</b><span data-i="exB_b">Your birth hour sets one of the four pillars. Don't know it? You'll still get a full year/month/day reading.</span></div>
+        <div><b data-i="exC_t">Five elements</b><span data-i="exC_b">Wood, Fire, Earth, Metal, Water. Which ones run strong or missing in you shapes your strengths and stress style.</span></div>
+      </div>
+      <p class="explainWhy" data-i="explainWhy"><b>Why MBTI + Saju?</b> MBTI shows how your mind works today; Saju shows the energy you were born with. Together they give a fuller, more personal picture — and a mental-care plan that actually fits you.</p>
+    </div>
+  </details>
+
+  <!-- INPUT -->
+  <div class="card" id="inputCard">
+    <h2>📝 <span data-i="formTitle">Your details</span></h2>
+    <p class="sub" data-i="formSub">Takes 30 seconds. Nothing is stored — everything runs in your browser.</p>
+    <div class="grid">
+      <div>
+        <label class="field" data-i="lblName">Name <small data-i="optional">(optional)</small></label>
+        <input id="name" type="text" placeholder="Soraya">
+      </div>
+      <div>
+        <label class="field" data-i="lblGender">Gender</label>
+        <select id="gender">
+          <option value="f" data-i="gFemale">Female</option>
+          <option value="m" data-i="gMale">Male</option>
+          <option value="x" data-i="gOther">Prefer not to say</option>
+        </select>
+      </div>
+      <div>
+        <label class="field" data-i="lblDate">Date of birth</label>
+        <input id="dob" type="date" value="1995-05-15">
+      </div>
+      <div>
+        <label class="field" data-i="lblTime">Time of birth</label>
+        <input id="tob" type="time" value="08:30">
+        <div class="checkrow"><input id="noTime" type="checkbox"><label for="noTime" data-i="noTime">I don't know my birth time</label></div>
+      </div>
+      <div>
+        <label class="field" data-i="lblMbti">Your MBTI</label>
+        <select id="mbti">
+          <option value="INTJ">INTJ</option><option value="INTP">INTP</option>
+          <option value="ENTJ">ENTJ</option><option value="ENTP">ENTP</option>
+          <option value="INFJ">INFJ</option><option value="INFP" selected>INFP</option>
+          <option value="ENFJ">ENFJ</option><option value="ENFP">ENFP</option>
+          <option value="ISTJ">ISTJ</option><option value="ISFJ">ISFJ</option>
+          <option value="ESTJ">ESTJ</option><option value="ESFJ">ESFJ</option>
+          <option value="ISTP">ISTP</option><option value="ISFP">ISFP</option>
+          <option value="ESTP">ESTP</option><option value="ESFP">ESFP</option>
+        </select>
+        <button type="button" class="quizlink" onclick="openQuiz()">🧭 <span data-i="quizCta">Don't know your MBTI? Take the 1-min quiz →</span></button>
+        <div class="mbtihint" data-i="mbtiHint">Prefer the full version? <a href="https://www.16personalities.com/free-personality-test" target="_blank" rel="noopener">60-question test →</a></div>
+      </div>
+      <div>
+        <label class="field" data-i="lblFocus">What's on your mind most?</label>
+        <select id="focus">
+          <option value="love" data-i="fLove">Love & relationships</option>
+          <option value="money" data-i="fMoney">Money & work</option>
+          <option value="self" data-i="fSelf" selected>Self & balance</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" onclick="generate()">✨ <span data-i="genBtn">Generate my report</span></button>
+  </div>
+
+  <!-- REPORT -->
+  <div id="report">
+    <div class="card">
+      <h2>🔮 <span data-i="r_pillars">Your Four Pillars (Saju)</span></h2>
+      <p class="sub" id="pillarSub"></p>
+      <div class="pillars" id="pillars"></div>
+      <p class="pillarsHelp" data-i="pillarsHelp"><b>How to read it:</b> each pillar = two characters (a "stem" on top, a "branch" below), each carrying one element. The top of your <b>Day</b> pillar is your <b>day-master</b> — the heart of who you are.</p>
+    </div>
+
+    <div class="card">
+      <h2>⚖️ <span data-i="r_balance">Your Five-Element Balance</span></h2>
+      <p class="sub" data-i="balanceSub">Which energies run strong or low in your chart.</p>
+      <div class="bars" id="bars"></div>
+      <p style="font-size:13.5px;color:#374151;margin-top:12px" id="balanceText"></p>
+    </div>
+
+    <div class="card">
+      <div class="section">
+        <h3>🧭 <span data-i="r_core">Core personality</span></h3>
+        <div class="archetype" id="archetype"></div>
+        <div id="coreTags"></div>
+        <p id="coreText"></p>
+      </div>
+      <div class="section">
+        <h3>💞 <span data-i="r_love">Love & Marriage</span></h3>
+        <p id="loveText"></p>
+      </div>
+      <div class="section">
+        <h3>💰 <span data-i="r_money">Money & Work</span></h3>
+        <p id="moneyText"></p>
+      </div>
+      <div class="section">
+        <h3>🌟 <span data-i="r_career">Strengths & Direction</span></h3>
+        <p id="careerText"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧘 <span data-i="r_stress">Your Stress-Care Plan</span></h2>
+      <p class="sub" id="stressSub"></p>
+      <p id="stressText"></p>
+      <ul class="tips" id="stressTips"></ul>
+    </div>
+
+    <div class="card">
+      <h2>💜 <span data-i="r_daily">Daily Mental Care</span></h2>
+      <div class="affirm">
+        <div class="q" id="affirmText"></div>
+        <div class="s" data-i="affirmLabel">TODAY'S AFFIRMATION</div>
+      </div>
+      <div class="breath">
+        <div class="circle"></div>
+        <div><p><b data-i="breathTitle">4-4-4-4 breathing</b></p><p style="color:var(--muted)" data-i="breathBody">Follow the circle: inhale as it grows (4s), hold (4s), exhale as it shrinks (4s), hold (4s). Repeat 4 rounds.</p></div>
+      </div>
+      <p style="font-size:14px;font-weight:600;margin:18px 0 4px" data-i="moodQ">How are you feeling right now?</p>
+      <div class="mood" id="mood"></div>
+      <div id="moodResult"></div>
+    </div>
+
+    <div class="card premium" id="premiumCard">
+      <h2>🔮 <span data-i="r_premium">Deep Reading</span><span class="unlocked-badge" id="unlockedBadge" style="display:none">✓ <span data-i="unlockedTag">Unlocked</span></span></h2>
+      <p class="sub" data-i="premiumSub">A deeper look — timing, compatibility, money windows & a premium care plan.</p>
+      <div id="premiumBody"></div>
+      <div id="premiumCTA" style="display:none">
+        <button class="btn unlockBtn" onclick="unlock()">☕ <span data-i="unlockBtn">Unlock for $2.50</span></button>
+        <div class="lockNote" data-i="lockNote">One-time · no subscription · secure payment via Stripe</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📸 <span data-i="r_share">Share your Soul Map</span></h2>
+      <p class="sub" data-i="shareSub">Save this card and post it on Instagram — tag @vamostravelkorea!</p>
+      <div id="shareCanvas"></div>
+      <button class="btn ghost" style="margin-top:16px" onclick="downloadCard()">⬇️ <span data-i="shareBtn">Download image (1080×1080)</span></button>
+    </div>
+
+    <p class="disclaimer" data-i="disclaimer">This report is for self-reflection and entertainment, not medical or psychological advice. If you're going through a hard time, please reach out to someone you trust or a professional.</p>
+
+    <div class="actions">
+      <button class="btn ghost" onclick="window.print()">🖨️ <span data-i="saveBtn">Save / Print as PDF</span></button>
+      <button class="btn ghost" onclick="resetForm()">↩️ <span data-i="againBtn">Start over</span></button>
+    </div>
+  </div>
+
+  <footer>Made with 💜 for travelers in Korea · <b>Vamos Travel Korea</b></footer>
+</div>
+
+<!-- MINI MBTI QUIZ -->
+<div id="quizOverlay" class="overlay">
+  <div class="quizcard">
+    <div class="quizhead">
+      <span data-i="quizTitle">Quick MBTI check</span>
+      <button onclick="closeQuiz()" aria-label="close">✕</button>
+    </div>
+    <div class="quizprog"><div id="quizBar"></div></div>
+    <div id="quizCount"></div>
+    <div id="quizQ" class="quizq"></div>
+    <div class="quizopts" id="quizOpts">
+      <button id="optA" onclick="answer('a')"></button>
+      <button id="optB" onclick="answer('b')"></button>
+    </div>
+    <div id="quizResult" class="quizresult"></div>
+  </div>
+</div>
+
+<script>
+/* ===================== i18n ===================== */
+const I18N = {
+  brandsub:{en:"MBTI × Saju · by Vamos Travel Korea",es:"MBTI × Saju · por Vamos Travel Korea"},
+  heroTitle:{en:"Discover your Korean Soul Map",es:"Descubre tu Mapa del Alma Coreano"},
+  heroSub:{en:"Your MBTI + Korean Saju (Four Pillars), turned into one clear report — with a personal mental-care guide.",es:"Tu MBTI + el Saju coreano (Cuatro Pilares) en un solo informe claro, con una guía personal de bienestar mental."},
+  formTitle:{en:"Your details",es:"Tus datos"},
+  formSub:{en:"Takes 30 seconds. Nothing is stored — everything runs in your browser.",es:"Toma 30 segundos. No se guarda nada: todo ocurre en tu navegador."},
+  lblName:{en:"Name",es:"Nombre"}, optional:{en:"(optional)",es:"(opcional)"},
+  lblGender:{en:"Gender",es:"Género"}, gFemale:{en:"Female",es:"Femenino"}, gMale:{en:"Male",es:"Masculino"}, gOther:{en:"Prefer not to say",es:"Prefiero no decir"},
+  lblDate:{en:"Date of birth",es:"Fecha de nacimiento"},
+  lblTime:{en:"Time of birth",es:"Hora de nacimiento"},
+  noTime:{en:"I don't know my birth time",es:"No sé mi hora de nacimiento"},
+  lblMbti:{en:"Your MBTI",es:"Tu MBTI"},
+  lblFocus:{en:"What's on your mind most?",es:"¿Qué te ocupa más la mente?"},
+  fLove:{en:"Love & relationships",es:"Amor y relaciones"}, fMoney:{en:"Money & work",es:"Dinero y trabajo"}, fSelf:{en:"Self & balance",es:"Yo y equilibrio"},
+  genBtn:{en:"Generate my report",es:"Generar mi informe"},
+  r_pillars:{en:"Your Four Pillars (Saju)",es:"Tus Cuatro Pilares (Saju)"},
+  r_balance:{en:"Your Five-Element Balance",es:"Tu equilibrio de los Cinco Elementos"},
+  balanceSub:{en:"Which energies run strong or low in your chart.",es:"Qué energías predominan o escasean en tu carta."},
+  r_core:{en:"Core personality",es:"Personalidad esencial"},
+  r_love:{en:"Love & Marriage",es:"Amor y matrimonio"},
+  r_money:{en:"Money & Work",es:"Dinero y trabajo"},
+  r_career:{en:"Strengths & Direction",es:"Fortalezas y dirección"},
+  r_stress:{en:"Your Stress-Care Plan",es:"Tu plan de cuidado del estrés"},
+  r_daily:{en:"Daily Mental Care",es:"Cuidado mental diario"},
+  affirmLabel:{en:"TODAY'S AFFIRMATION",es:"AFIRMACIÓN DE HOY"},
+  breathTitle:{en:"4-4-4-4 breathing",es:"Respiración 4-4-4-4"},
+  breathBody:{en:"Follow the circle: inhale as it grows (4s), hold (4s), exhale as it shrinks (4s), hold (4s). Repeat 4 rounds.",es:"Sigue el círculo: inhala mientras crece (4s), retén (4s), exhala mientras se encoge (4s), retén (4s). Repite 4 rondas."},
+  moodQ:{en:"How are you feeling right now?",es:"¿Cómo te sientes ahora mismo?"},
+  disclaimer:{en:"This report is for self-reflection and entertainment, not medical or psychological advice. If you're going through a hard time, please reach out to someone you trust or a professional.",es:"Este informe es para la autorreflexión y el entretenimiento, no es consejo médico ni psicológico. Si estás pasando por un momento difícil, por favor habla con alguien de confianza o un profesional."},
+  saveBtn:{en:"Save / Print as PDF",es:"Guardar / Imprimir PDF"},
+  againBtn:{en:"Start over",es:"Empezar de nuevo"},
+  quizCta:{en:"Don't know your MBTI? Take the 1-min quiz →",es:"¿No sabes tu MBTI? Haz el test de 1 min →"},
+  mbtiHint:{en:'Prefer the full version? <a href="https://www.16personalities.com/free-personality-test" target="_blank" rel="noopener">60-question test →</a>',es:'¿Prefieres la versión completa? <a href="https://www.16personalities.com/es/test-de-personalidad" target="_blank" rel="noopener">Test de 60 preguntas →</a>'},
+  quizTitle:{en:"Quick MBTI check",es:"Test rápido de MBTI"},
+  quizPrompt:{en:"Which sounds more like you?",es:"¿Qué se parece más a ti?"},
+  quizCount:{en:"Question {n} of {t}",es:"Pregunta {n} de {t}"},
+  quizResultLead:{en:"You're most likely…",es:"Lo más probable es que seas…"},
+  quizUse:{en:"Use this & continue",es:"Usar esto y continuar"},
+  quizNote:{en:"A quick estimate — you can change it anytime in the dropdown.",es:"Una estimación rápida: puedes cambiarlo cuando quieras en la lista."},
+  explainQ:{en:"🇰🇷 New to Saju? Read the 30-second intro",es:"🇰🇷 ¿No conoces el Saju? Lee la intro de 30 segundos"},
+  explainP1:{en:"Saju (사주) — the \"Four Pillars of Destiny\" — is traditional Korean astrology. It maps the energy of the year, month, day and hour you were born into four \"pillars,\" each written with characters tied to the five elements. The balance between them describes your natural temperament, relationships, money flow and life rhythm. Koreans still check it before marriages, business launches and big decisions.",es:"El Saju (사주), los \"Cuatro Pilares del Destino\", es la astrología tradicional coreana. Traza la energía del año, mes, día y hora en que naciste en cuatro \"pilares\", cada uno escrito con caracteres ligados a los cinco elementos. El equilibrio entre ellos describe tu temperamento, tus relaciones, tu relación con el dinero y tu ritmo de vida. En Corea aún se consulta antes de bodas, negocios y grandes decisiones."},
+  exA_t:{en:"Like a birth chart",es:"Como una carta astral"},
+  exA_b:{en:"It's the Korean cousin of your zodiac sign or birth chart — read from your exact birth date and time, not just your month.",es:"Es el primo coreano de tu signo del zodiaco o carta astral: se lee desde tu fecha y hora exactas de nacimiento, no solo tu mes."},
+  exB_t:{en:"Why time matters",es:"Por qué importa la hora"},
+  exB_b:{en:"Your birth hour sets one of the four pillars. Don't know it? You'll still get a full year/month/day reading.",es:"Tu hora de nacimiento define uno de los cuatro pilares. ¿No la sabes? Igual tendrás una lectura completa de año/mes/día."},
+  exC_t:{en:"Five elements",es:"Cinco elementos"},
+  exC_b:{en:"Wood, Fire, Earth, Metal, Water. Which ones run strong or missing in you shapes your strengths and stress style.",es:"Madera, Fuego, Tierra, Metal, Agua. Cuáles predominan o faltan en ti moldea tus fortalezas y tu forma de estrés."},
+  explainWhy:{en:"<b>Why MBTI + Saju?</b> MBTI shows how your mind works today; Saju shows the energy you were born with. Together they give a fuller, more personal picture — and a mental-care plan that actually fits you.",es:"<b>¿Por qué MBTI + Saju?</b> El MBTI muestra cómo funciona tu mente hoy; el Saju, la energía con la que naciste. Juntos dan una imagen más completa y personal, y un plan de bienestar mental que de verdad encaja contigo."},
+  pillarsHelp:{en:"<b>How to read it:</b> each pillar = two characters (a \"stem\" on top, a \"branch\" below), each carrying one element. The top of your <b>Day</b> pillar is your <b>day-master</b> — the heart of who you are.",es:"<b>Cómo leerlo:</b> cada pilar = dos caracteres (un \"tallo\" arriba y una \"rama\" abajo), cada uno con un elemento. La parte superior de tu pilar del <b>Día</b> es tu <b>maestro del día</b>: el corazón de quién eres."},
+  r_share:{en:"Share your Soul Map",es:"Comparte tu Mapa del Alma"},
+  shareSub:{en:"Save this card and post it on Instagram — tag @vamostravelkorea!",es:"Guarda esta tarjeta y publícala en Instagram — etiqueta a @vamostravelkorea!"},
+  shareBtn:{en:"Download image (1080×1080)",es:"Descargar imagen (1080×1080)"},
+  r_premium:{en:"Deep Reading",es:"Lectura Profunda"},
+  unlockedTag:{en:"Unlocked",es:"Desbloqueado"},
+  premiumSub:{en:"A deeper look — timing, compatibility, money windows & a premium care plan.",es:"Una mirada más profunda — tiempos, compatibilidad, ventanas de dinero y un plan de cuidado premium."},
+  lockTitle:{en:"Unlock your Deep Reading",es:"Desbloquea tu Lectura Profunda"},
+  lk1:{en:"📅 Your 2026 luck timing — best & caution months",es:"📅 Tu timing de suerte 2026 — meses buenos y de cuidado"},
+  lk2:{en:"💞 Love & marriage timing + best/worst matches",es:"💞 Tiempos de amor y matrimonio + mejores/peores parejas"},
+  lk3:{en:"💰 Your wealth windows for the year",es:"💰 Tus ventanas de riqueza del año"},
+  lk4:{en:"🍀 Lucky color, day, direction & numbers",es:"🍀 Color, día, dirección y números de la suerte"},
+  lk5:{en:"🧘 Premium 7-day mental reset plan",es:"🧘 Plan premium de 7 días para reiniciar tu mente"},
+  unlockBtn:{en:"Unlock for $2.50",es:"Desbloquear por $2.50"},
+  lockNote:{en:"One-time · no subscription · secure payment via Stripe",es:"Pago único · sin suscripción · pago seguro con Stripe"},
+  p_2026:{en:"Your 2026",es:"Tu 2026"},
+  p_best:{en:"Best months",es:"Mejores meses"},
+  p_caution:{en:"Caution",es:"Cuidado"},
+  p_love:{en:"Love & marriage timing",es:"Tiempos de amor y matrimonio"},
+  p_match:{en:"You click with",es:"Conectas con"},
+  p_clash:{en:"Friction with",es:"Fricción con"},
+  p_wealth:{en:"Money windows",es:"Ventanas de dinero"},
+  p_wealthEl:{en:"Your wealth element",es:"Tu elemento de riqueza"},
+  p_luck:{en:"Your lucky keys",es:"Tus claves de la suerte"},
+  p_color:{en:"Color",es:"Color"},
+  p_dir:{en:"Direction",es:"Dirección"},
+  p_day:{en:"Day",es:"Día"},
+  p_num:{en:"Numbers",es:"Números"},
+  p_luckNote:{en:"Lean on {el} — its color, day and direction recharge your weakest energy.",es:"Apóyate en {el}: su color, día y dirección recargan tu energía más débil."},
+  p_plan:{en:"Premium 7-day mental reset",es:"Reinicio mental premium de 7 días"},
+  archLabel:{en:"YOUR ARCHETYPE",es:"TU ARQUETIPO"},
+  teaserLabel:{en:"A GLIMPSE OF YOUR 2026",es:"UN VISTAZO A TU 2026"},
+};
+let LANG='en';
+function setLang(l){
+  LANG=l;
+  document.documentElement.lang=l;
+  document.getElementById('btnEn').classList.toggle('active',l==='en');
+  document.getElementById('btnEs').classList.toggle('active',l==='es');
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const k=el.getAttribute('data-i'); if(I18N[k]) el.innerHTML=I18N[k][l];
+  });
+  if(document.getElementById('report').style.display==='block') generate(true);
+  const qo=document.getElementById('quizOverlay');
+  if(qo && qo.classList.contains('show') && qi<QUIZ.length) renderQuiz();
+}
+
+/* ===================== Saju engine ===================== */
+const STEMS=[
+ {han:'甲',ro:'Gap',el:'wood',yy:'yang'},{han:'乙',ro:'Eul',el:'wood',yy:'yin'},
+ {han:'丙',ro:'Byeong',el:'fire',yy:'yang'},{han:'丁',ro:'Jeong',el:'fire',yy:'yin'},
+ {han:'戊',ro:'Mu',el:'earth',yy:'yang'},{han:'己',ro:'Gi',el:'earth',yy:'yin'},
+ {han:'庚',ro:'Gyeong',el:'metal',yy:'yang'},{han:'辛',ro:'Sin',el:'metal',yy:'yin'},
+ {han:'壬',ro:'Im',el:'water',yy:'yang'},{han:'癸',ro:'Gye',el:'water',yy:'yin'}
+];
+const BRANCHES=[
+ {han:'子',ro:'Ja',an:'Rat',el:'water'},{han:'丑',ro:'Chuk',an:'Ox',el:'earth'},
+ {han:'寅',ro:'In',an:'Tiger',el:'wood'},{han:'卯',ro:'Myo',an:'Rabbit',el:'wood'},
+ {han:'辰',ro:'Jin',an:'Dragon',el:'earth'},{han:'巳',ro:'Sa',an:'Snake',el:'fire'},
+ {han:'午',ro:'O',an:'Horse',el:'fire'},{han:'未',ro:'Mi',an:'Goat',el:'earth'},
+ {han:'申',ro:'Sin',an:'Monkey',el:'metal'},{han:'酉',ro:'Yu',an:'Rooster',el:'metal'},
+ {han:'戌',ro:'Sul',an:'Dog',el:'earth'},{han:'亥',ro:'Hae',an:'Pig',el:'water'}
+];
+// approximate solar-term ("절") start day for each Gregorian month
+const TERMDAY={1:6,2:4,3:6,4:5,5:6,6:6,7:7,8:8,9:8,10:8,11:7,12:7};
+// month-branch index n (寅=0) when day>=term start, by Gregorian month
+const GMONTH_N={1:11,2:0,3:1,4:2,5:3,6:4,7:5,8:6,9:7,10:8,11:9,12:10};
+
+function gregToJDN(y,m,d){
+  const a=Math.floor((14-m)/12), y2=y+4800-a, m2=m+12*a-3;
+  return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;
+}
+function mod(n,m){return((n%m)+m)%m;}
+
+function computeSaju(y,m,d,hour,minute,hasTime){
+  // ---- year pillar (boundary at 입춘 ~Feb 4) ----
+  let yearForPillar=y;
+  if(m<2 || (m===2 && d<TERMDAY[2])) yearForPillar=y-1;
+  const yStem=mod(yearForPillar-4,10), yBranch=mod(yearForPillar-4,12);
+
+  // ---- month pillar ----
+  let n=GMONTH_N[m];
+  if(d<TERMDAY[m]) n=mod(n-1,12);           // before the term -> previous solar month
+  const mStemStart=mod((yStem%5)*2+2,10);   // 五虎遁
+  const mStem=mod(mStemStart+n,10), mBranch=mod(2+n,12);
+
+  // ---- day pillar (anchor: 2000-01-07 = 甲子) ----
+  const jdn=gregToJDN(y,m,d);
+  const dIdx=mod(jdn-2451551,60);
+  const dStem=dIdx%10, dBranch=dIdx%12;
+
+  // ---- hour pillar ----
+  let hStem=null,hBranch=null;
+  if(hasTime){
+    let hb=Math.floor((hour+1)/2)%12;       // 23-01 -> 子(0)
+    const hStemStart=mod((dStem%5)*2,10);   // 五鼠遁
+    hStem=mod(hStemStart+hb,10); hBranch=hb;
+  }
+
+  // ---- five-element tally ----
+  const tally={wood:0,fire:0,earth:0,metal:0,water:0};
+  [STEMS[yStem],STEMS[mStem],STEMS[dStem]].forEach(s=>tally[s.el]++);
+  [BRANCHES[yBranch],BRANCHES[mBranch],BRANCHES[dBranch]].forEach(b=>tally[b.el]++);
+  if(hasTime){tally[STEMS[hStem].el]++;tally[BRANCHES[hBranch].el]++;}
+
+  const pillars={
+    year:{s:STEMS[yStem],b:BRANCHES[yBranch]},
+    month:{s:STEMS[mStem],b:BRANCHES[mBranch]},
+    day:{s:STEMS[dStem],b:BRANCHES[dBranch]},
+    hour:hasTime?{s:STEMS[hStem],b:BRANCHES[hBranch]}:null
+  };
+  return {pillars,tally,dayMaster:STEMS[dStem]};
+}
+
+/* ===================== content ===================== */
+const EL_NAME={
+ wood:{en:"Wood",es:"Madera"},fire:{en:"Fire",es:"Fuego"},earth:{en:"Earth",es:"Tierra"},
+ metal:{en:"Metal",es:"Metal"},water:{en:"Water",es:"Agua"}
+};
+const EL_HEX={wood:'#34a853',fire:'#ea4335',earth:'#d9a441',metal:'#9aa3b2',water:'#3b82f6'};
+// Five-element pentagon radar (오행 오각형). order = wood→fire→earth→metal→water (생성 순환)
+function pentagonSVG(tally, order){
+  const W=360,H=300,cx=180,cy=150,R=98,LD=126;
+  const maxV=Math.max(...order.map(e=>tally[e]),1);
+  const pt=(r,i)=>{const a=(-90+72*i)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  const fmt=(r,i)=>pt(r,i).map(n=>n.toFixed(1)).join(',');
+  let grid='';
+  [0.25,0.5,0.75,1].forEach(f=>{grid+=`<polygon points="${order.map((e,i)=>fmt(R*f,i)).join(' ')}" fill="none" stroke="#e7e9ef" stroke-width="1"/>`;});
+  let spokes='';
+  order.forEach((e,i)=>{const[x,y]=pt(R,i);spokes+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e7e9ef" stroke-width="1"/>`;});
+  const dataPts=order.map((e,i)=>fmt(R*(tally[e]/maxV),i)).join(' ');
+  let dots='',labels='';
+  order.forEach((e,i)=>{
+    const[dx,dy]=pt(R*(tally[e]/maxV),i);
+    dots+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="4.5" fill="${EL_HEX[e]}" stroke="#fff" stroke-width="1.5"/>`;
+    const[lx,ly]=pt(LD,i);
+    const anchor=Math.abs(lx-cx)<6?'middle':(lx>cx?'start':'end');
+    const off=ly<cy-6?-3:(ly>cy+6?11:4);
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+off).toFixed(1)}" text-anchor="${anchor}" font-size="13" font-weight="700" fill="${EL_HEX[e]}">${EL_NAME[e][LANG]}</text>`;
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+off+15).toFixed(1)}" text-anchor="${anchor}" font-size="12.5" font-weight="700" fill="#6b7280">${tally[e]}</text>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:360px;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="penFill" cx="50%" cy="50%" r="62%">
+      <stop offset="0%" stop-color="#6d5efc" stop-opacity="0.38"/>
+      <stop offset="100%" stop-color="#ff7a59" stop-opacity="0.20"/>
+    </radialGradient></defs>
+    ${grid}${spokes}
+    <polygon points="${dataPts}" fill="url(#penFill)" stroke="#6d5efc" stroke-width="2.5" stroke-linejoin="round"/>
+    ${dots}${labels}
+  </svg>`;
+}
+
+/* ===================== shareable Instagram card (1080×1080) ===================== */
+const EL_HEX_LIGHT={wood:'#5bd47a',fire:'#ff6b5e',earth:'#f0c14b',metal:'#c2cad6',water:'#5b9bff'};
+const SHARE_SOUL={
+ wood:{en:"Growing, grounded, and built to lead.",es:"Que crece, firme y nacida para liderar."},
+ fire:{en:"Warm, magnetic, and impossible to ignore.",es:"Cálida, magnética e imposible de ignorar."},
+ earth:{en:"Steady, loyal, and quietly strong.",es:"Estable, leal y fuerte en silencio."},
+ metal:{en:"Sharp, clear, and true to your word.",es:"Aguda, clara y fiel a tu palabra."},
+ water:{en:"Deep, intuitive, and endlessly adaptable.",es:"Profunda, intuitiva e infinitamente adaptable."}
+};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function wrapTspans(text,x,y,lineH,max){
+  const words=text.split(' '); let lines=[],cur='';
+  words.forEach(w=>{ if((cur?cur+' '+w:w).length>max){if(cur)lines.push(cur);cur=w;}else cur=cur?cur+' '+w:w; });
+  if(cur)lines.push(cur);
+  return lines.map((ln,i)=>`<tspan x="${x}" y="${y+i*lineH}">${esc(ln)}</tspan>`).join('');
+}
+function shareCardSVG(d){
+  const order=['wood','fire','earth','metal','water'];
+  const cx=540, cy=455, R=188, LD=243;
+  const maxV=Math.max(...order.map(e=>d.tally[e]),1);
+  const pt=(r,i)=>{const a=(-90+72*i)*Math.PI/180;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+  const fmt=(r,i)=>pt(r,i).map(n=>n.toFixed(1)).join(',');
+  let grid='';[0.34,0.67,1].forEach(f=>{grid+=`<polygon points="${order.map((e,i)=>fmt(R*f,i)).join(' ')}" fill="none" stroke="rgba(255,255,255,0.16)" stroke-width="1.5"/>`;});
+  let spokes='';order.forEach((e,i)=>{const[x,y]=pt(R,i);spokes+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="rgba(255,255,255,0.16)" stroke-width="1.5"/>`;});
+  const dataPts=order.map((e,i)=>fmt(R*(d.tally[e]/maxV),i)).join(' ');
+  let dots='',labels='';
+  order.forEach((e,i)=>{
+    const[dx,dy]=pt(R*(d.tally[e]/maxV),i);
+    dots+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="8" fill="${EL_HEX_LIGHT[e]}" stroke="#fff" stroke-width="2"/>`;
+    const[lx,ly]=pt(LD,i);
+    const anchor=Math.abs(lx-cx)<6?'middle':(lx>cx?'start':'end');
+    const off=ly<cy-6?-6:(ly>cy+6?20:6);
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+off).toFixed(1)}" text-anchor="${anchor}" font-size="27" font-weight="700" fill="${EL_HEX_LIGHT[e]}">${esc(EL_NAME[e][LANG])}</text>`;
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+off+30).toFixed(1)}" text-anchor="${anchor}" font-size="25" font-weight="700" fill="rgba(255,255,255,0.92)">${d.tally[e]}</text>`;
+  });
+  const soul=wrapTspans(SHARE_SOUL[d.el][LANG],540,868,42,30);
+  const subtitle=d.name?esc(d.name):'MBTI × SAJU';
+  const dmLabel=LANG==='en'?`${esc(d.dayRo)} ${esc(EL_NAME[d.el][LANG])} day-master`:`maestro del día ${esc(d.dayRo)} (${esc(EL_NAME[d.el][LANG])})`;
+  return `<svg id="cardSvg" width="1080" height="1080" viewBox="0 0 1080 1080" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#1a1140"/><stop offset="55%" stop-color="#2c1a5e"/><stop offset="100%" stop-color="#4a1d63"/></linearGradient>
+      <radialGradient id="glow" cx="50%" cy="38%" r="55%"><stop offset="0%" stop-color="rgba(155,140,255,0.30)"/><stop offset="100%" stop-color="rgba(155,140,255,0)"/></radialGradient>
+      <linearGradient id="df" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#9b8cff" stop-opacity="0.6"/><stop offset="100%" stop-color="#ff7a59" stop-opacity="0.5"/></linearGradient>
+    </defs>
+    <rect width="1080" height="1080" fill="url(#bg)"/>
+    <rect width="1080" height="1080" fill="url(#glow)"/>
+    <text x="540" y="90" text-anchor="middle" font-size="30" font-weight="800" letter-spacing="8" fill="#ffd6a8">KOREA SOUL MAP</text>
+    <text x="540" y="128" text-anchor="middle" font-size="22" letter-spacing="3" fill="rgba(255,255,255,0.6)">${subtitle}</text>
+    ${grid}${spokes}
+    <polygon points="${dataPts}" fill="url(#df)" stroke="#cbbcff" stroke-width="3" stroke-linejoin="round"/>
+    ${dots}${labels}
+    <text x="540" y="728" text-anchor="middle" font-size="21" letter-spacing="5" fill="rgba(255,255,255,0.5)">${esc(T('archLabel'))}</text>
+    <text x="540" y="776" text-anchor="middle" font-size="50" font-weight="800" fill="#f4c97a">${esc(d.arch)}</text>
+    <text x="540" y="818" text-anchor="middle" font-size="26" font-weight="600" fill="#c9b8ff">${esc(d.mbti)} · ${esc(d.nick)} · ${esc(EL_NAME[d.el][LANG])}</text>
+    <text text-anchor="middle" font-size="30" font-weight="500" fill="rgba(255,255,255,0.92)">${soul}</text>
+    <line x1="380" y1="956" x2="700" y2="956" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
+    <text x="540" y="998" text-anchor="middle" font-size="23" letter-spacing="3" font-weight="700" fill="#ffd6a8">VAMOS TRAVEL KOREA</text>
+    <text x="540" y="1028" text-anchor="middle" font-size="20" letter-spacing="2" fill="rgba(255,255,255,0.55)">vamosajeju.com</text>
+  </svg>`;
+}
+function downloadCard(){
+  const svg=document.querySelector('#shareCanvas svg');
+  if(!svg) return;
+  const xml=new XMLSerializer().serializeToString(svg);
+  const src='data:image/svg+xml;base64,'+btoa(unescape(encodeURIComponent(xml)));
+  const img=new Image();
+  img.onload=function(){
+    const c=document.createElement('canvas'); c.width=1080; c.height=1080;
+    const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,1080,1080);
+    const a=document.createElement('a');
+    a.download='korea-soul-map.png';
+    a.href=c.toDataURL('image/png'); a.click();
+  };
+  img.onerror=function(){ alert(LANG==='en'?'Could not build the image — try a screenshot instead.':'No se pudo generar la imagen — intenta una captura de pantalla.'); };
+  img.src=src;
+}
+
+/* ===================== premium "Deep Reading" (paywall, rule-based) ===================== */
+// ⬇️⬇️⬇️ OWNER: paste your Stripe Payment Link here (set its success URL to  https://YOUR-SITE/?unlocked=1 )
+const STRIPE_LINK = "https://buy.stripe.com/REPLACE_WITH_YOUR_LINK";
+
+function T(k){return I18N[k]?I18N[k][LANG]:k;}
+function isUnlocked(){try{return localStorage.getItem('ksm_unlocked')==='1';}catch(e){return false;}}
+function saveInputs(){try{localStorage.setItem('ksm_input',JSON.stringify({
+  dob:document.getElementById('dob').value, tob:document.getElementById('tob').value,
+  noTime:document.getElementById('noTime').checked, gender:document.getElementById('gender').value,
+  mbti:document.getElementById('mbti').value, focus:document.getElementById('focus').value,
+  name:document.getElementById('name').value, lang:LANG }));}catch(e){}}
+function unlock(){
+  if(STRIPE_LINK.indexOf('REPLACE_WITH_YOUR_LINK')>=0){
+    alert(LANG==='en'?"Payment link not set yet. (Owner: paste your Stripe Payment Link into STRIPE_LINK in the code.)":"El enlace de pago aún no está configurado. (Dueña: pega tu enlace de pago de Stripe en STRIPE_LINK en el código.)");
+    return;
+  }
+  saveInputs();
+  window.location.href = STRIPE_LINK;
+}
+
+const EL_COLOR={wood:{en:"Green",es:"Verde"},fire:{en:"Red",es:"Rojo"},earth:{en:"Yellow / earth tones",es:"Amarillo / tonos tierra"},metal:{en:"White / gold",es:"Blanco / dorado"},water:{en:"Blue / black",es:"Azul / negro"}};
+const EL_DIR={wood:{en:"East",es:"Este"},fire:{en:"South",es:"Sur"},earth:{en:"Center",es:"Centro"},metal:{en:"West",es:"Oeste"},water:{en:"North",es:"Norte"}};
+const EL_DAYW={wood:{en:"Thursday",es:"jueves"},fire:{en:"Tuesday",es:"martes"},earth:{en:"Saturday",es:"sábado"},metal:{en:"Friday",es:"viernes"},water:{en:"Wednesday",es:"miércoles"}};
+const EL_NUM={wood:"3, 8",fire:"2, 7",earth:"5, 10",metal:"4, 9",water:"1, 6"};
+const EL_MATCH={wood:{good:['water','fire'],bad:'metal'},fire:{good:['wood','earth'],bad:'water'},earth:{good:['fire','metal'],bad:'wood'},metal:{good:['earth','water'],bad:'fire'},water:{good:['metal','wood'],bad:'earth'}};
+const EL_WEALTH={wood:'earth',fire:'metal',earth:'water',metal:'wood',water:'fire'};
+const PREMIUM={
+ wood:{
+  y2026:{en:"2026 is a Fire year — for your Wood nature, Fire is your 'expression' energy. This is a year to be seen: launch, publish, present, put your ideas out loud. Visibility and creative work pay off. The risk is burning your fuel too fast — pace yourself so the momentum lasts.",es:"2026 es un año de Fuego, y para tu naturaleza Madera el Fuego es tu energía de 'expresión'. Es un año para hacerte ver: lanzar, publicar, presentar, decir tus ideas en voz alta. La visibilidad y lo creativo dan fruto. El riesgo es gastar tu combustible muy rápido: dosifícate para que el impulso dure."},
+  bestM:{en:"Feb–Jul (spring growth + summer shine)",es:"Feb–jul (crecimiento de primavera + brillo de verano)"},
+  cautM:{en:"Aug–Oct (Metal season — guard energy & big decisions)",es:"Ago–oct (temporada Metal — cuida tu energía y decisiones)"},
+  love:{en:"You're ready to grow with someone toward a shared future this year. Spring and early summer are your warmest windows for meeting or deepening a bond. Lead with openness, not control.",es:"Este año estás listo para crecer con alguien hacia un futuro compartido. La primavera y el inicio del verano son tus mejores momentos para conocer a alguien o profundizar un vínculo. Lidera con apertura, no con control."},
+  wealth:{en:"Your money grows through what you build and create — projects, skills, things with a long arc. 2026 rewards turning visibility into income (content, services, a side build). Reinvest steadily rather than chasing quick wins.",es:"Tu dinero crece por lo que construyes y creas: proyectos, habilidades, cosas con recorrido. 2026 premia convertir tu visibilidad en ingresos (contenido, servicios, un proyecto paralelo). Reinvierte con constancia en vez de buscar ganancias rápidas."},
+  mental:{en:"7-day reset: each morning, 3 min outside near anything green; midday, finish one concrete task before noon; evening, write one thing you released today. Wood calms when it moves and grows — walk daily, and let one plan go each week.",es:"Reinicio de 7 días: cada mañana, 3 min al aire libre cerca de algo verde; al mediodía, termina una tarea concreta antes de las 12; por la noche, anota una cosa que soltaste hoy. La Madera se calma al moverse y crecer: camina a diario y suelta un plan cada semana."}},
+ fire:{
+  y2026:{en:"2026 is a Fire year — and you ARE Fire. Expect your energy, charisma and confidence amplified. Doors open through people and presence. The flip side: ego clashes and competition heat up, and you can overcommit. Choose where to shine; you can't light every room.",es:"2026 es un año de Fuego, y tú ERES Fuego. Tu energía, carisma y confianza se amplifican. Las puertas se abren por la gente y tu presencia. El reverso: chocan los egos, sube la competencia y puedes comprometerte de más. Elige dónde brillar; no puedes iluminar cada sala."},
+  bestM:{en:"Apr–Jul (your season — peak momentum)",es:"Abr–jul (tu temporada — máximo impulso)"},
+  cautM:{en:"Nov–Jan (Water season — rest, don't overextend)",es:"Nov–ene (temporada Agua — descansa, no te sobreexijas)"},
+  love:{en:"A magnetic year for romance — you'll attract easily. The work is choosing depth over sparks. Summer is your hottest window; pick someone who feels safe enough for the fire to last, not just flare.",es:"Un año magnético para el amor: atraerás con facilidad. El reto es elegir profundidad sobre chispas. El verano es tu mejor momento; elige a alguien que te dé seguridad para que el fuego dure, no solo destelle."},
+  wealth:{en:"Money follows your visibility and people this year — sales, content, anything social. Strong income windows, but impulse spending spikes when you're excited. Automate savings so the fun money has a ceiling.",es:"El dinero sigue tu visibilidad y tu gente este año: ventas, contenido, todo lo social. Buenas ventanas de ingreso, pero el gasto impulsivo sube cuando te emocionas. Automatiza el ahorro para ponerle techo al dinero 'divertido'."},
+  mental:{en:"7-day reset: protect one screen-free hour before bed; say no to one social plan this week; practice long, slow exhales (in 4, out 8) when wired. Fire burns out by over-giving — schedule rest like it's an appointment.",es:"Reinicio de 7 días: protege una hora sin pantallas antes de dormir; di que no a un plan social esta semana; practica exhalaciones largas (inhala 4, exhala 8) cuando estés acelerado. El Fuego se consume al dar de más: agenda el descanso como una cita."}},
+ earth:{
+  y2026:{en:"2026 is a Fire year — and Fire feeds your Earth. This is a supportive year: mentors, learning, and steady foundations. Good for study, home, property, and consolidating what you've built. Say yes to help offered; you don't have to carry it all.",es:"2026 es un año de Fuego, y el Fuego alimenta tu Tierra. Es un año de apoyo: mentores, aprendizaje y bases sólidas. Bueno para estudiar, el hogar, propiedades y consolidar lo construido. Acepta la ayuda que te ofrezcan; no tienes que cargar con todo."},
+  bestM:{en:"May–Jul & transition months (Fire feeds you)",es:"May–jul y meses de transición (el Fuego te nutre)"},
+  cautM:{en:"Feb–Apr (Wood season — protect your boundaries)",es:"Feb–abr (temporada Madera — protege tus límites)"},
+  love:{en:"A grounding year for love — you build real home and stability. Best in summer. Say your needs out loud instead of quietly enduring; the right person wants to give back, not just receive.",es:"Un año de echar raíces en el amor: construyes hogar y estabilidad reales. Mejor en verano. Di tus necesidades en voz alta en vez de aguantar en silencio; la persona correcta quiere dar, no solo recibir."},
+  wealth:{en:"You accumulate steadily — saving, property and stability suit you, and 2026's support makes it a good year to build reserves or buy something lasting. Don't be so cautious you miss one well-researched opportunity.",es:"Acumulas con constancia: ahorrar, propiedades y estabilidad te van bien, y el apoyo de 2026 lo hace un buen año para crear reservas o comprar algo duradero. No seas tan cauta que dejes pasar una oportunidad bien estudiada."},
+  mental:{en:"7-day reset: write worries down each night to empty your head; eat warm, regular meals; help yourself first once a day. Earth overthinks and absorbs everyone's stress — set one boundary this week and keep it.",es:"Reinicio de 7 días: anota tus preocupaciones cada noche para vaciar la cabeza; come comidas cálidas y regulares; ayúdate a ti primero una vez al día. La Tierra le da mil vueltas y absorbe el estrés de todos: pon un límite esta semana y mantenlo."}},
+ metal:{
+  y2026:{en:"2026 is a Fire year — and Fire pressures Metal. Expect a year of responsibility, visibility and demands: career steps up, authority leans on you. It can forge you, but stress and self-criticism rise. Loosen one standard, and don't carry the whole weight alone.",es:"2026 es un año de Fuego, y el Fuego presiona al Metal. Espera un año de responsabilidad, exposición y exigencias: la carrera sube, la autoridad se apoya en ti. Puede forjarte, pero suben el estrés y la autocrítica. Afloja un estándar y no cargues todo el peso sola."},
+  bestM:{en:"Aug–Oct & late summer (Earth & Metal support you)",es:"Ago–oct y fin de verano (Tierra y Metal te apoyan)"},
+  cautM:{en:"May–Jul (Fire season — pace yourself, manage stress)",es:"May–jul (temporada Fuego — dosifícate, gestiona el estrés)"},
+  love:{en:"Loyalty and high standards define your love, but this year's pressure can make you cool or critical. Best in autumn. Soften your words — your partner needs warmth more than correctness.",es:"La lealtad y los altos estándares definen tu amor, pero la presión de este año puede volverte fría o crítica. Mejor en otoño. Suaviza tus palabras: tu pareja necesita más calidez que razón."},
+  wealth:{en:"You handle money with discipline and clear judgment. 2026's pressure can mean bigger responsibility but bigger rewards if you structure it — budgets, quality over quantity. Let yourself enjoy some of it, not only optimize.",es:"Manejas el dinero con disciplina y criterio claro. La presión de 2026 puede traer más responsabilidad pero también más recompensa si lo estructuras: presupuestos, calidad sobre cantidad. Permítete disfrutar algo, no solo optimizar."},
+  mental:{en:"7-day reset: lower one standard to 'good enough' each day; deep belly-breathing to open tight lungs; declutter one small space. Metal grips control under stress — order outside calms order inside.",es:"Reinicio de 7 días: baja un estándar a 'suficientemente bueno' cada día; respira hondo con el vientre para abrir los pulmones; ordena un pequeño espacio. El Metal se aferra al control bajo estrés: el orden afuera calma el de adentro."}},
+ water:{
+  y2026:{en:"2026 is a Fire year — and Fire is your wealth element. This is your money-and-opportunity year: income, deals and visibility activate. Relationships and finances move fast. Ride it, but spend wisely — what flows in easily can flow out just as fast.",es:"2026 es un año de Fuego, y el Fuego es tu elemento de riqueza. Es tu año de dinero y oportunidades: ingresos, acuerdos y visibilidad se activan. Las relaciones y las finanzas se mueven rápido. Aprovéchalo, pero gasta con cabeza: lo que entra fácil puede salir igual de rápido."},
+  bestM:{en:"Nov–Jan & autumn (Metal & Water support you)",es:"Nov–ene y otoño (Metal y Agua te apoyan)"},
+  cautM:{en:"Earth / late-summer months (guard against draining)",es:"Meses Tierra / fin de verano (cuídate del agotamiento)"},
+  love:{en:"An active, opportunity-rich year for love — your intuition reads people fast. Best in winter. Guard against losing yourself in the other person; keep your own center and a partner who values honest depth.",es:"Un año activo y lleno de oportunidades para el amor: tu intuición lee a la gente rápido. Mejor en invierno. Evita perderte en el otro; conserva tu centro y elige a alguien que valore la profundidad sincera."},
+  wealth:{en:"This is your strongest wealth year of the cycle — Fire opportunities are everywhere. Flexible, varied income suits you. Because cash flows in and out easily, lock one fixed savings habit you never touch.",es:"Es tu año de mayor riqueza del ciclo: las oportunidades de Fuego están por todas partes. Te van los ingresos flexibles y variados. Como el dinero entra y sale con facilidad, fija un hábito de ahorro que nunca toques."},
+  mental:{en:"7-day reset: keep a steady sleep + warmth routine; cut late-night scrolling that feeds anxious thoughts; talk one worry out loud each day. Water floods under stress — it needs to flow and be warmed, not pool inside.",es:"Reinicio de 7 días: mantén una rutina estable de sueño y calor; corta el móvil de madrugada que alimenta la ansiedad; habla una preocupación en voz alta cada día. El Agua se desborda bajo estrés: necesita fluir y calentarse, no estancarse."}}
+};
+function premiumHTML(d){
+  const P=PREMIUM[d.el], L=LANG, m=EL_MATCH[d.el];
+  const goodNames=m.good.map(e=>EL_NAME[e][L]).join(L==='en'?' & ':' y ');
+  const badName=EL_NAME[m.bad][L];
+  const wealthEl=EL_WEALTH[d.el], luckEl=d.weak;
+  return `
+   <div class="pblock"><h4>📅 ${T('p_2026')}</h4><p>${P.y2026[L]}</p>
+     <div class="pchips"><span class="pchip good">${T('p_best')}: ${P.bestM[L]}</span><span class="pchip warn">${T('p_caution')}: ${P.cautM[L]}</span></div></div>
+   <div class="pblock"><h4>💞 ${T('p_love')}</h4><p>${P.love[L]}</p>
+     <p class="pmatch">✅ ${T('p_match')}: <b>${goodNames}</b> &nbsp;·&nbsp; ❌ ${T('p_clash')}: <b>${badName}</b></p></div>
+   <div class="pblock"><h4>💰 ${T('p_wealth')}</h4><p>${P.wealth[L]}</p>
+     <p class="psmall">${T('p_wealthEl')}: <b>${EL_NAME[wealthEl][L]}</b></p></div>
+   <div class="pblock"><h4>🍀 ${T('p_luck')}</h4>
+     <div class="lucktable">
+       <div><span>${T('p_color')}</span><b>${EL_COLOR[luckEl][L]}</b></div>
+       <div><span>${T('p_dir')}</span><b>${EL_DIR[luckEl][L]}</b></div>
+       <div><span>${T('p_day')}</span><b>${EL_DAYW[luckEl][L]}</b></div>
+       <div><span>${T('p_num')}</span><b>${EL_NUM[luckEl]}</b></div>
+     </div>
+     <p class="psmall">${T('p_luckNote').replace('{el}',EL_NAME[luckEl][L])}</p></div>
+   <div class="pblock"><h4>🧘 ${T('p_plan')}</h4><p>${P.mental[L]}</p></div>`;
+}
+function premiumTeaserHTML(d){
+  const P=PREMIUM[d.el], L=LANG;
+  const parts=P.y2026[L].split('. ');
+  const hook=parts.slice(0,2).join('. ')+(parts.length>2?'…':'');
+  const rows=[
+    {ic:'📅',t:T('p_2026'),p:P.y2026[L]},
+    {ic:'💞',t:T('p_love'),p:P.love[L]},
+    {ic:'💰',t:T('p_wealth'),p:P.wealth[L]},
+    {ic:'🍀',t:T('p_luck'),p:T('lk4').replace(/^🍀\s*/,'')},
+    {ic:'🧘',t:T('p_plan'),p:P.mental[L]}
+  ];
+  return `<div class="pteaser"><div class="pteaser-label">✨ ${T('teaserLabel')}</div><p>${hook}</p></div>`
+    + rows.map(r=>`<div class="lockedrow"><span class="lr-ic">${r.ic}</span><div class="lr-body"><div class="lr-t">${r.t}</div><div class="lr-prev">${r.p}</div></div><span class="lr-lock">🔒</span></div>`).join('');
+}
+
+/* ===================== archetype name (sajufy-style hook) ===================== */
+const ARCH_NOUN={wood:{en:"Oak",es:"Roble",g:'m'},fire:{en:"Flame",es:"Llama",g:'f'},earth:{en:"Mountain",es:"Montaña",g:'f'},metal:{en:"Blade",es:"Filo",g:'m'},water:{en:"Tide",es:"Marea",g:'f'}};
+const ARCH_ADJ={
+ INTJ:{en:"Strategic",m:"Estratégico",f:"Estratégica"}, INTP:{en:"Curious",m:"Curioso",f:"Curiosa"},
+ ENTJ:{en:"Commanding",m:"Soberano",f:"Soberana"}, ENTP:{en:"Bold",m:"Audaz",f:"Audaz"},
+ INFJ:{en:"Visionary",m:"Visionario",f:"Visionaria"}, INFP:{en:"Dreaming",m:"Soñador",f:"Soñadora"},
+ ENFJ:{en:"Radiant",m:"Radiante",f:"Radiante"}, ENFP:{en:"Free",m:"Libre",f:"Libre"},
+ ISTJ:{en:"Steadfast",m:"Constante",f:"Constante"}, ISFJ:{en:"Devoted",m:"Devoto",f:"Devota"},
+ ESTJ:{en:"Resolute",m:"Resuelto",f:"Resuelta"}, ESFJ:{en:"Warm",m:"Cálido",f:"Cálida"},
+ ISTP:{en:"Fearless",m:"Intrépido",f:"Intrépida"}, ISFP:{en:"Gentle",m:"Gentil",f:"Gentil"},
+ ESTP:{en:"Daring",m:"Atrevido",f:"Atrevida"}, ESFP:{en:"Vivid",m:"Vívido",f:"Vívida"}
+};
+function archetype(mbti,el){
+  const n=ARCH_NOUN[el], a=ARCH_ADJ[mbti];
+  if(LANG==='en') return "The "+a.en+" "+n.en;
+  return (n.g==='m'?'El ':'La ')+n.es+' '+a[n.g];
+}
+
+/* ===================== dark premium theme ===================== */
+function toggleTheme(){
+  const dark=document.body.classList.toggle('dark');
+  document.getElementById('themeBtn').textContent = dark?'☀️':'🌙';
+  try{localStorage.setItem('ksm_theme',dark?'dark':'light');}catch(e){}
+}
+const EL_CORE={
+ wood:{en:"a Wood day-master — growth-driven, principled and visionary. You like to plan, build and move things forward.",es:"un maestro del día Madera: orientado al crecimiento, con principios y visión. Te gusta planear, construir y hacer avanzar las cosas."},
+ fire:{en:"a Fire day-master — warm, expressive and magnetic. You bring energy into a room and connect people naturally.",es:"un maestro del día Fuego: cálido, expresivo y magnético. Llevas energía a cualquier lugar y conectas a la gente con naturalidad."},
+ earth:{en:"an Earth day-master — grounded, loyal and nurturing. People trust you and lean on your steadiness.",es:"un maestro del día Tierra: estable, leal y protector. La gente confía en ti y se apoya en tu serenidad."},
+ metal:{en:"a Metal day-master — disciplined, sharp and fair. You value clarity, quality and doing things right.",es:"un maestro del día Metal: disciplinado, agudo y justo. Valoras la claridad, la calidad y hacer las cosas bien."},
+ water:{en:"a Water day-master — adaptable, intuitive and deep. You read people and situations before they speak.",es:"un maestro del día Agua: adaptable, intuitivo y profundo. Lees a las personas y las situaciones antes de que hablen."}
+};
+const EL_LOVE={
+ wood:{en:"In love you give direction and grow alongside your partner — you commit to a shared future. Watch a tendency to 'improve' your partner; let them be as they are. A calm, steady partner who appreciates your drive suits you best.",es:"En el amor das dirección y creces junto a tu pareja: te comprometes con un futuro compartido. Cuidado con querer 'mejorar' a tu pareja; déjala ser como es. Te conviene alguien tranquilo y constante que valore tu impulso."},
+ fire:{en:"You love passionately and openly — affection, warmth and fun matter to you. The risk is burning hot then cooling fast, so choose someone who keeps you grounded and feels safe enough for the spark to last.",es:"Amas con pasión y franqueza: el cariño, la calidez y la diversión te importan. El riesgo es encenderte mucho y enfriarte rápido; elige a alguien que te dé estabilidad y seguridad para que la chispa dure."},
+ earth:{en:"You are the loyal, devoted partner who builds a real home. You give a lot — just make sure it's returned, and say your needs out loud instead of silently enduring. Marriage suits your nature well.",es:"Eres la pareja leal y entregada que construye un hogar de verdad. Das mucho: asegúrate de que te correspondan y expresa tus necesidades en vez de aguantar en silencio. El matrimonio encaja muy bien contigo."},
+ metal:{en:"You love with loyalty and high standards, but can come across as cool or critical. Soften your words; your partner needs warmth more than correctness. Once committed, you're devoted for the long run.",es:"Amas con lealtad y altos estándares, pero puedes parecer fría o crítica. Suaviza tus palabras; tu pareja necesita más calidez que razón. Cuando te comprometes, eres fiel a largo plazo."},
+ water:{en:"You are emotionally intuitive and flexible, easily sensing what your partner feels. Guard against losing yourself in the other person — keep your own center. A partner who values depth and honest talks fits you.",es:"Eres intuitiva y flexible en lo emocional, captas fácilmente lo que siente tu pareja. Evita perderte en el otro: conserva tu centro. Te va bien alguien que valore la profundidad y las conversaciones sinceras."}
+};
+const EL_MONEY={
+ wood:{en:"You earn by building things over time — careers, projects, businesses with a long arc. Steady investing beats quick bets for you. Avoid overextending into too many plans at once.",es:"Ganas construyendo a lo largo del tiempo: carreras, proyectos, negocios con recorrido. La inversión constante te funciona mejor que las apuestas rápidas. Evita dispersarte en demasiados planes a la vez."},
+ fire:{en:"Money comes through visibility, ideas and people — sales, content, anything where your energy shines. Watch impulse spending when you're excited; automate savings so the fun money has a limit.",es:"El dinero llega por visibilidad, ideas y gente: ventas, contenido, todo donde brille tu energía. Cuidado con el gasto impulsivo cuando te emocionas; automatiza el ahorro para poner límite al dinero 'divertido'."},
+ earth:{en:"You're a natural saver and accumulator — stability and property suit you. Your steady hand builds wealth slowly and safely. Just don't be so cautious that you miss a good, well-researched opportunity.",es:"Eres ahorradora y acumuladora por naturaleza: la estabilidad y los bienes te van bien. Tu mano firme construye riqueza despacio y con seguridad. Pero no seas tan cauta que dejes pasar una buena oportunidad bien estudiada."},
+ metal:{en:"You handle money with discipline and clear judgment — budgets, structure and quality purchases. Finance, analysis and craftsmanship reward you. Let yourself enjoy some of it too, not only optimize.",es:"Manejas el dinero con disciplina y criterio claro: presupuestos, estructura y compras de calidad. Las finanzas, el análisis y el buen oficio te recompensan. Permítete disfrutarlo también, no solo optimizar."},
+ water:{en:"You make money through adaptability, timing and reading trends — flexible, varied income suits you. Because cash flows in and out easily, build one fixed savings habit you never touch.",es:"Ganas por adaptabilidad, oportunidad y lectura de tendencias: te van los ingresos flexibles y variados. Como el dinero entra y sale con facilidad, crea un hábito de ahorro fijo que nunca toques."}
+};
+// MBTI: nickname + one-liner + core tags
+const MBTI={
+ INTJ:{nick:{en:"The Architect",es:"La Arquitecta"},line:{en:"strategic, independent and future-focused",es:"estratégica, independiente y enfocada en el futuro"}},
+ INTP:{nick:{en:"The Thinker",es:"La Pensadora"},line:{en:"curious, logical and quietly inventive",es:"curiosa, lógica e inventiva en silencio"}},
+ ENTJ:{nick:{en:"The Commander",es:"La Comandante"},line:{en:"decisive, driven and natural at leading",es:"decidida, ambiciosa y líder por naturaleza"}},
+ ENTP:{nick:{en:"The Debater",es:"La Innovadora"},line:{en:"quick, bold and full of ideas",es:"rápida, audaz y llena de ideas"}},
+ INFJ:{nick:{en:"The Advocate",es:"La Consejera"},line:{en:"insightful, idealistic and deeply caring",es:"perceptiva, idealista y muy entregada"}},
+ INFP:{nick:{en:"The Mediator",es:"La Mediadora"},line:{en:"empathetic, imaginative and value-driven",es:"empática, imaginativa y guiada por valores"}},
+ ENFJ:{nick:{en:"The Protagonist",es:"La Protagonista"},line:{en:"warm, inspiring and people-focused",es:"cálida, inspiradora y centrada en la gente"}},
+ ENFP:{nick:{en:"The Campaigner",es:"La Activista"},line:{en:"enthusiastic, free-spirited and creative",es:"entusiasta, libre y creativa"}},
+ ISTJ:{nick:{en:"The Logistician",es:"La Inspectora"},line:{en:"reliable, thorough and dutiful",es:"fiable, meticulosa y responsable"}},
+ ISFJ:{nick:{en:"The Defender",es:"La Protectora"},line:{en:"caring, loyal and quietly dependable",es:"atenta, leal y de confianza"}},
+ ESTJ:{nick:{en:"The Executive",es:"La Ejecutiva"},line:{en:"organized, direct and dependable",es:"organizada, directa y fiable"}},
+ ESFJ:{nick:{en:"The Consul",es:"La Cónsul"},line:{en:"sociable, supportive and warm",es:"sociable, solidaria y cálida"}},
+ ISTP:{nick:{en:"The Virtuoso",es:"La Virtuosa"},line:{en:"practical, calm and great under pressure",es:"práctica, serena y buena bajo presión"}},
+ ISFP:{nick:{en:"The Adventurer",es:"La Aventurera"},line:{en:"gentle, artistic and present",es:"dulce, artística y presente"}},
+ ESTP:{nick:{en:"The Entrepreneur",es:"La Emprendedora"},line:{en:"bold, energetic and action-first",es:"audaz, enérgica y de acción"}},
+ ESFP:{nick:{en:"The Entertainer",es:"La Animadora"},line:{en:"spontaneous, fun and generous",es:"espontánea, divertida y generosa"}}
+};
+// stress patterns + tips by element
+const EL_STRESS={
+ wood:{p:{en:"When blocked or controlled, Wood energy turns to frustration and irritability — you push harder and tense up.",es:"Cuando te bloquean o controlan, la energía Madera se vuelve frustración e irritabilidad: empujas más fuerte y te tensas."},
+   t:{en:["Move your body daily — a walk or stretch releases stuck Wood energy.","Channel frustration into one concrete task instead of arguing.","Spend time near trees or green spaces to reset."],es:["Mueve el cuerpo a diario: caminar o estirar libera la energía Madera estancada.","Canaliza la frustración en una tarea concreta en vez de discutir.","Pasa tiempo entre árboles o zonas verdes para reiniciarte."]}},
+ fire:{p:{en:"Under stress Fire burns out — you over-give, over-talk and then crash into exhaustion or anxiety.",es:"Bajo estrés el Fuego se consume: das de más, hablas de más y luego te desplomas en agotamiento o ansiedad."},
+   t:{en:["Protect quiet, screen-free time before bed to cool down.","Say no to one social thing a week — rest is productive.","Slow, long exhales calm an over-active Fire system."],es:["Protege un rato tranquilo y sin pantallas antes de dormir.","Di que no a un plan social por semana: descansar también produce.","Exhalaciones lentas y largas calman un sistema Fuego acelerado."]}},
+ earth:{p:{en:"Earth absorbs everyone's worries and overthinks — stress shows up as rumination, heaviness and stomach tension.",es:"La Tierra absorbe las preocupaciones de todos y le da mil vueltas: el estrés aparece como rumiación, pesadez y tensión en el estómago."},
+   t:{en:["Write worries down to get them out of your head.","Eat warm, regular meals — your center needs grounding.","Help yourself first sometimes; you're allowed to receive."],es:["Escribe tus preocupaciones para sacarlas de la cabeza.","Come comidas cálidas y regulares: tu centro necesita anclaje.","Ayúdate a ti primero a veces; también puedes recibir."]}},
+ metal:{p:{en:"Metal under stress becomes rigid and self-critical — you grip control, judge yourself and hold tension in the chest.",es:"El Metal bajo estrés se vuelve rígido y autocrítico: te aferras al control, te juzgas y acumulas tensión en el pecho."},
+   t:{en:["Loosen one standard today — 'good enough' is a skill.","Deep breathing opens tight Metal lungs and softens you.","Declutter a small space; order outside calms order inside."],es:["Afloja un estándar hoy: 'suficientemente bueno' también es una habilidad.","La respiración profunda abre los pulmones Metal y te suaviza.","Ordena un pequeño espacio; el orden afuera calma el de adentro."]}},
+ water:{p:{en:"Water under stress floods — fear, overthinking at night and a feeling of being overwhelmed or drained.",es:"El Agua bajo estrés se desborda: miedo, pensamientos nocturnos y sensación de agobio o vacío."},
+   t:{en:["Keep a steady sleep and warmth routine; cold drains Water.","Limit late-night scrolling that feeds anxious thoughts.","Talk it out — Water needs to flow, not pool inside."],es:["Mantén una rutina estable de sueño y calor; el frío agota al Agua.","Limita el móvil de madrugada que alimenta la ansiedad.","Habla lo que sientes: el Agua necesita fluir, no estancarse."]}}
+};
+const AFFIRM=[
+ {en:"I am allowed to grow at my own pace.",es:"Tengo permiso de crecer a mi propio ritmo."},
+ {en:"My worth isn't measured by how much I do today.",es:"Mi valor no se mide por cuánto hago hoy."},
+ {en:"I can be a work in progress and still be enough.",es:"Puedo estar en proceso y aun así ser suficiente."},
+ {en:"Peace is a choice I can make right now.",es:"La paz es una elección que puedo tomar ahora."},
+ {en:"I release what I cannot control.",es:"Suelto aquello que no puedo controlar."},
+ {en:"I deserve the same kindness I give others.",es:"Merezco la misma amabilidad que doy a los demás."},
+ {en:"One small step today is still progress.",es:"Un pequeño paso hoy también es avanzar."}
+];
+const MOODS=[
+ {k:'stressed',e:'😣',label:{en:"Stressed",es:"Estresada"},r:{en:"Stop and take 4 slow breaths with a long exhale. Then write down only the ONE thing you can act on in the next hour — ignore the rest for now.",es:"Detente y haz 4 respiraciones lentas con exhalación larga. Luego escribe solo UNA cosa que puedas hacer en la próxima hora; ignora el resto por ahora."}},
+ {k:'anxious',e:'😰',label:{en:"Anxious",es:"Ansiosa"},r:{en:"Ground yourself: name 5 things you see, 4 you can touch, 3 you hear. Anxiety lives in the future — bring yourself back to this room.",es:"Aterrízate: nombra 5 cosas que ves, 4 que puedes tocar, 3 que oyes. La ansiedad vive en el futuro; vuelve a esta habitación."}},
+ {k:'tired',e:'😮‍💨',label:{en:"Tired",es:"Cansada"},r:{en:"Your body is asking for rest, not more pushing. Drink water, step away from the screen for 10 minutes, and give yourself permission to do less today.",es:"Tu cuerpo pide descanso, no más esfuerzo. Bebe agua, aléjate de la pantalla 10 minutos y date permiso de hacer menos hoy."}},
+ {k:'low',e:'😔',label:{en:"Low",es:"Decaída"},r:{en:"Be gentle with yourself. Do one tiny kind thing — a warm drink, a message to a friend, sunlight. You don't have to fix the whole mood at once.",es:"Sé amable contigo. Haz una pequeña cosa amable: una bebida caliente, un mensaje a un amigo, sol. No tienes que arreglar todo el ánimo de golpe."}},
+ {k:'okay',e:'🙂',label:{en:"Okay",es:"Bien"},r:{en:"Nice — steady is good. Lock it in: take one deep breath and notice one thing you're quietly grateful for right now.",es:"Genial, la estabilidad es buena. Refuérzalo: respira hondo y nota una cosa por la que te sientes agradecida ahora."}},
+ {k:'great',e:'😄',label:{en:"Great",es:"Genial"},r:{en:"Love it! Savor it — your energy is high. Use a little of it on something that matters to you, or share it with someone today.",es:"¡Me encanta! Disfrútalo, tu energía está alta. Usa un poco en algo que te importe o compártelo con alguien hoy."}}
+];
+
+/* ===================== render ===================== */
+let lastInput=null;
+function generate(rerenderOnly){
+  const dob=document.getElementById('dob').value;
+  if(!dob){alert(LANG==='en'?'Please enter your date of birth.':'Por favor ingresa tu fecha de nacimiento.');return;}
+  const hasTime=!document.getElementById('noTime').checked && document.getElementById('tob').value!=='';
+  const tob=document.getElementById('tob').value||'12:00';
+  const [Y,M,D]=dob.split('-').map(Number);
+  const [hh,mm]=tob.split(':').map(Number);
+  const mbti=document.getElementById('mbti').value;
+  const focus=document.getElementById('focus').value;
+  const name=document.getElementById('name').value.trim();
+  lastInput={Y,M,D,hh,mm,hasTime,mbti,focus,name};
+
+  const saju=computeSaju(Y,M,D,hh,mm,hasTime);
+  const el=saju.dayMaster.el;
+  const total=Object.values(saju.tally).reduce((a,b)=>a+b,0);
+
+  // pillar sub line
+  const nm = name? (LANG==='en'?name+", here is your map.":name+", aquí está tu mapa."):(LANG==='en'?"Here is your map.":"Aquí está tu mapa.");
+  document.getElementById('pillarSub').textContent = nm + " " + (LANG==='en'
+    ? "Your day-master is "+saju.dayMaster.han+" ("+saju.dayMaster.ro+", "+EL_NAME[el][LANG]+") — that's the heart of your chart."
+    : "Tu maestro del día es "+saju.dayMaster.han+" ("+saju.dayMaster.ro+", "+EL_NAME[el][LANG]+"), el corazón de tu carta.");
+
+  // pillars
+  const roles={year:{en:'Year',es:'Año'},month:{en:'Month',es:'Mes'},day:{en:'Day',es:'Día'},hour:{en:'Hour',es:'Hora'}};
+  const order=['hour','day','month','year'];
+  let ph='';
+  order.forEach(role=>{
+    const p=saju.pillars[role];
+    if(!p){ph+=`<div class="pillar"><div class="role">${roles[role][LANG]}</div><div class="han" style="color:var(--muted)">?</div><div class="ro">${LANG==='en'?'no time':'sin hora'}</div></div>`;return;}
+    ph+=`<div class="pillar">
+      <div class="role">${roles[role][LANG]}</div>
+      <div class="han">${p.s.han}</div><div class="ro">${p.s.ro}</div>
+      <span class="chip el-${p.s.el}">${EL_NAME[p.s.el][LANG]}</span>
+      <div class="br"><div class="han" style="font-size:24px">${p.b.han}</div><div class="ro">${p.b.ro}</div>
+      <span class="chip el-${p.b.el}">${EL_NAME[p.b.el][LANG]}</span></div>
+    </div>`;
+  });
+  document.getElementById('pillars').innerHTML=ph;
+
+  // five-element pentagon (오행 오각형)
+  const elsOrder=['wood','fire','earth','metal','water'];
+  document.getElementById('bars').innerHTML=pentagonSVG(saju.tally, elsOrder);
+
+  // balance text: strongest & missing
+  let strong=elsOrder[0], weak=elsOrder[0];
+  elsOrder.forEach(e=>{if(saju.tally[e]>saju.tally[strong])strong=e; if(saju.tally[e]<saju.tally[weak])weak=e;});
+  const missing=elsOrder.filter(e=>saju.tally[e]===0).map(e=>EL_NAME[e][LANG]);
+  document.getElementById('balanceText').innerHTML = LANG==='en'
+    ? `Your strongest energy is <b>${EL_NAME[strong][LANG]}</b>${missing.length?`, and you have little or no <b>${missing.join(', ')}</b>`:''}. Leaning on activities, colors and people that bring in your weaker elements helps you feel balanced.`
+    : `Tu energía más fuerte es <b>${EL_NAME[strong][LANG]}</b>${missing.length?`, y tienes poco o nada de <b>${missing.join(', ')}</b>`:''}. Apoyarte en actividades, colores y personas que aporten tus elementos débiles te ayuda a sentirte en equilibrio.`;
+
+  // core
+  const mb=MBTI[mbti];
+  document.getElementById('archetype').innerHTML = `<div class="archlabel">${T('archLabel')}</div><div class="archname">✦ ${archetype(mbti,el)}</div>`;
+  document.getElementById('coreTags').innerHTML =
+    `<span class="tag">${mbti} · ${mb.nick[LANG]}</span><span class="tag">${EL_NAME[el][LANG]} ${saju.dayMaster.yy==='yang'?'⊕':'⊖'}</span><span class="tag">${saju.dayMaster.han} ${saju.dayMaster.ro}</span>`;
+  document.getElementById('coreText').innerHTML = LANG==='en'
+    ? `As an <b>${mbti}</b> you are ${mb.line[LANG]}. In Saju you are ${EL_CORE[el][LANG]} Together this means your personality runs on ${mb.line[LANG]} energy, steadied (or stretched) by your ${EL_NAME[el][LANG]} nature — a rare, specific blend that's worth leaning into.`
+    : `Como <b>${mbti}</b> eres ${mb.line[LANG]}. En el Saju eres ${EL_CORE[el][LANG]} Juntos significan que tu personalidad funciona con energía ${mb.line[LANG]}, equilibrada (o tensada) por tu naturaleza ${EL_NAME[el][LANG]}: una mezcla única y específica que vale la pena aprovechar.`;
+
+  document.getElementById('loveText').innerHTML = EL_LOVE[el][LANG];
+  document.getElementById('moneyText').innerHTML = EL_MONEY[el][LANG];
+
+  // career
+  document.getElementById('careerText').innerHTML = LANG==='en'
+    ? `Your sweet spot is where <b>${mb.nick[LANG]}</b> strengths (${mb.line[LANG]}) meet your ${EL_NAME[el][LANG]} drive. Build toward roles and projects that use both — and protect your ${missing.length?EL_NAME[weak][LANG]:EL_NAME[weak][LANG]} side, which is where you tire fastest.`
+    : `Tu punto ideal está donde las fortalezas de <b>${mb.nick[LANG]}</b> (${mb.line[LANG]}) se unen con tu impulso ${EL_NAME[el][LANG]}. Avanza hacia roles y proyectos que usen ambos, y cuida tu lado ${EL_NAME[weak][LANG]}, donde te agotas más rápido.`;
+
+  // stress
+  document.getElementById('stressSub').textContent = LANG==='en'
+    ? "Built from your "+EL_NAME[el][LANG]+" day-master and "+mbti+" wiring." : "Basado en tu maestro del día "+EL_NAME[el][LANG]+" y tu perfil "+mbti+".";
+  document.getElementById('stressText').innerHTML = EL_STRESS[el].p[LANG];
+  const tips=EL_STRESS[el].t[LANG];
+  // add 1 MBTI-axis tip
+  const axisTip = mbti[0]==='I'
+    ? {en:"As an introvert, schedule real alone-time to recharge — it's not selfish, it's fuel.",es:"Como introvertida, agenda tiempo a solas de verdad para recargarte: no es egoísmo, es combustible."}[LANG]
+    : {en:"As an extrovert, don't isolate when stressed — one good conversation resets you faster than withdrawing.",es:"Como extrovertida, no te aísles al estresarte: una buena conversación te reinicia más rápido que encerrarte."}[LANG];
+  document.getElementById('stressTips').innerHTML = tips.concat([axisTip]).map(t=>`<li>${t}</li>`).join('');
+
+  // affirmation (deterministic-ish by day master so it feels personal, rotates by date)
+  const idx = (saju.dayMaster.han.charCodeAt(0)+new Date().getDate())%AFFIRM.length;
+  document.getElementById('affirmText').textContent = AFFIRM[idx][LANG];
+
+  // mood
+  document.getElementById('mood').innerHTML = MOODS.map(m=>`<button onclick="pickMood('${m.k}',this)">${m.e} ${m.label[LANG]}</button>`).join('');
+  document.getElementById('moodResult').style.display='none';
+
+  // shareable Instagram card
+  document.getElementById('shareCanvas').innerHTML = shareCardSVG({name:name, mbti:mbti, nick:mb.nick[LANG], el:el, dayRo:saju.dayMaster.ro, tally:saju.tally, arch:archetype(mbti,el)});
+
+  // premium "Deep Reading" — teaser→lock funnel (sajufy-style)
+  const _ul=isUnlocked();
+  document.getElementById('premiumBody').innerHTML = _ul ? premiumHTML({el:el, weak:weak}) : premiumTeaserHTML({el:el, weak:weak});
+  document.getElementById('premiumCTA').style.display = _ul?'none':'block';
+  document.getElementById('unlockedBadge').style.display = _ul?'inline-block':'none';
+  saveInputs();
+
+  // focus-based reorder hint: scroll target unaffected; keep simple
+  document.getElementById('inputCard').style.display=rerenderOnly?document.getElementById('inputCard').style.display:'none';
+  document.getElementById('report').style.display='block';
+  if(!rerenderOnly) window.scrollTo({top:0,behavior:'smooth'});
+}
+function pickMood(k,btn){
+  document.querySelectorAll('#mood button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const m=MOODS.find(x=>x.k===k);
+  const box=document.getElementById('moodResult');
+  box.innerHTML=`<b>${m.e} ${m.label[LANG]}</b><br>${m.r[LANG]}`;
+  box.style.display='block';
+}
+function resetForm(){
+  document.getElementById('report').style.display='none';
+  document.getElementById('inputCard').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+/* ===================== mini MBTI quiz ===================== */
+const QUIZ=[
+ {pa:'E',pb:'I',a:{en:"After a busy day, I recharge by going out and being around people.",es:"Tras un día ocupado, recargo saliendo y rodeándome de gente."},b:{en:"After a busy day, I recharge with quiet time on my own.",es:"Tras un día ocupado, recargo con un rato tranquilo a solas."}},
+ {pa:'S',pb:'N',a:{en:"I trust facts, details and real experience.",es:"Confío en hechos, detalles y experiencia real."},b:{en:"I trust patterns, ideas and what could be.",es:"Confío en patrones, ideas y lo que podría ser."}},
+ {pa:'T',pb:'F',a:{en:"I make decisions with logic and what's fair.",es:"Decido con lógica y con lo que es justo."},b:{en:"I make decisions with feelings and how people are affected.",es:"Decido con los sentimientos y cómo afecta a la gente."}},
+ {pa:'J',pb:'P',a:{en:"I feel best when plans are decided and scheduled.",es:"Me siento mejor cuando los planes están decididos y agendados."},b:{en:"I feel best when plans stay open and flexible.",es:"Me siento mejor cuando los planes quedan abiertos y flexibles."}},
+ {pa:'E',pb:'I',a:{en:"In a group I speak up and think out loud.",es:"En grupo hablo y pienso en voz alta."},b:{en:"In a group I listen and reflect before speaking.",es:"En grupo escucho y reflexiono antes de hablar."}},
+ {pa:'S',pb:'N',a:{en:"I prefer learning that's practical and step-by-step.",es:"Prefiero aprender de forma práctica y paso a paso."},b:{en:"I prefer the big concept and its meaning.",es:"Prefiero el concepto general y su significado."}},
+ {pa:'T',pb:'F',a:{en:"When a friend has a problem, I help them solve it.",es:"Si un amigo tiene un problema, le ayudo a resolverlo."},b:{en:"When a friend has a problem, I focus on understanding and supporting them.",es:"Si un amigo tiene un problema, me enfoco en entenderlo y apoyarlo."}},
+ {pa:'J',pb:'P',a:{en:"I finish tasks early at a steady pace.",es:"Termino mis tareas pronto y a ritmo constante."},b:{en:"I do my best work near the deadline.",es:"Rindo mejor cerca de la fecha límite."}},
+ {pa:'E',pb:'I',a:{en:"Meeting new people gives me energy.",es:"Conocer gente nueva me da energía."},b:{en:"Too much socializing drains me.",es:"Socializar demasiado me agota."}},
+ {pa:'S',pb:'N',a:{en:"My attention stays on the present and the concrete.",es:"Mi atención está en el presente y lo concreto."},b:{en:"My mind drifts to the future and possibilities.",es:"Mi mente vuela al futuro y las posibilidades."}},
+ {pa:'T',pb:'F',a:{en:"People see me as honest and direct.",es:"La gente me ve honesta y directa."},b:{en:"People see me as warm and tactful.",es:"La gente me ve cálida y diplomática."}},
+ {pa:'J',pb:'P',a:{en:"I like my space organized and tidy.",es:"Me gusta mi espacio ordenado y limpio."},b:{en:"I'm spontaneous and a bit messy.",es:"Soy espontánea y un poco desordenada."}}
+];
+let qi=0, qscore={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+function openQuiz(){
+  qi=0; qscore={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+  document.getElementById('quizResult').classList.remove('show');
+  document.getElementById('quizOpts').style.display='flex';
+  document.getElementById('quizQ').style.display='block';
+  document.getElementById('quizOverlay').classList.add('show');
+  renderQuiz();
+}
+function closeQuiz(){document.getElementById('quizOverlay').classList.remove('show');}
+function renderQuiz(){
+  if(qi>=QUIZ.length){return;}
+  const item=QUIZ[qi];
+  document.getElementById('quizBar').style.width=Math.round(qi/QUIZ.length*100)+'%';
+  document.getElementById('quizCount').textContent=I18N.quizCount[LANG].replace('{n}',qi+1).replace('{t}',QUIZ.length);
+  document.getElementById('quizQ').textContent=I18N.quizPrompt[LANG];
+  document.getElementById('optA').textContent=item.a[LANG];
+  document.getElementById('optB').textContent=item.b[LANG];
+}
+function answer(side){
+  const item=QUIZ[qi];
+  qscore[side==='a'?item.pa:item.pb]++;
+  qi++;
+  if(qi>=QUIZ.length) finishQuiz(); else renderQuiz();
+}
+function finishQuiz(){
+  const type=(qscore.E>=qscore.I?'E':'I')+(qscore.S>=qscore.N?'S':'N')+(qscore.T>=qscore.F?'T':'F')+(qscore.J>=qscore.P?'J':'P');
+  document.getElementById('mbti').value=type;
+  document.getElementById('quizBar').style.width='100%';
+  document.getElementById('quizQ').style.display='none';
+  document.getElementById('quizOpts').style.display='none';
+  document.getElementById('quizCount').textContent='';
+  const res=document.getElementById('quizResult');
+  res.innerHTML=`<div style="font-size:13px;color:var(--muted)">${I18N.quizResultLead[LANG]}</div>
+    <div class="big">${type}</div>
+    <div class="nick">${MBTI[type].nick[LANG]} · ${MBTI[type].line[LANG]}</div>
+    <button class="btn" onclick="useQuiz()">✨ ${I18N.quizUse[LANG]}</button>
+    <div style="font-size:11px;color:var(--muted);margin-top:12px">${I18N.quizNote[LANG]}</div>`;
+  res.classList.add('show');
+}
+function useQuiz(){
+  closeQuiz();
+  document.getElementById('mbti').scrollIntoView({block:'center',behavior:'smooth'});
+}
+setLang('en');
+
+// restore saved theme
+try{ if(localStorage.getItem('ksm_theme')==='dark'){ document.body.classList.add('dark'); document.getElementById('themeBtn').textContent='☀️'; } }catch(e){}
+
+// payment return + persistent unlock (device-level, fine for a light test)
+(function(){
+  try{
+    var p=new URLSearchParams(location.search);
+    if(p.get('unlocked')==='1' || p.has('session_id')){
+      localStorage.setItem('ksm_unlocked','1');
+      history.replaceState({},'',location.pathname);
+    }
+    if(localStorage.getItem('ksm_unlocked')==='1'){
+      var raw=localStorage.getItem('ksm_input');
+      if(raw){
+        var s=JSON.parse(raw);
+        if(s.lang && s.lang!==LANG) setLang(s.lang);
+        if(s.dob) document.getElementById('dob').value=s.dob;
+        if(s.tob) document.getElementById('tob').value=s.tob;
+        document.getElementById('noTime').checked=!!s.noTime;
+        if(s.gender) document.getElementById('gender').value=s.gender;
+        if(s.mbti) document.getElementById('mbti').value=s.mbti;
+        if(s.focus) document.getElementById('focus').value=s.focus;
+        if(s.name) document.getElementById('name').value=s.name;
+        generate();
+        var pc=document.getElementById('premiumCard');
+        if(pc) setTimeout(function(){pc.scrollIntoView({block:'start',behavior:'smooth'});},200);
+      }
+    }
+  }catch(e){}
+})();
+</script>
+</body>
+</html>
