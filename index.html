@@ -144,6 +144,11 @@
   body.dark .pchip.good{background:rgba(52,168,83,.22)}
   body.dark .pchip.warn{background:rgba(217,164,65,.24)}
   body.dark #bars line,body.dark #bars polygon[fill="none"]{stroke:rgba(255,255,255,.15)}
+  body.dark .card h2,body.dark .section h3,body.dark .pblock h4,body.dark .quizq,body.dark [data-i=moodQ],body.dark .breath b,body.dark #pillarSub{color:var(--ink) !important}
+  .timegrid{display:flex;align-items:center;gap:8px}
+  .timegrid select{width:auto;flex:1;min-width:0}
+  .tcolon{font-weight:800;color:var(--muted)}
+  .ampm{font-size:13px;font-weight:800;color:var(--brand);flex:0 0 auto;min-width:38px;text-align:center}
 
   /* report */
   #report{display:none}
@@ -172,7 +177,7 @@
   ul.tips li{margin-bottom:6px;font-size:14px;color:#374151}
 
   .mood{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-  .mood button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-size:14px;cursor:pointer;font-weight:600;transition:all .12s}
+  .mood button{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:9px 14px;font-size:14px;cursor:pointer;font-weight:600;transition:all .12s}
   .mood button:hover{border-color:var(--brand)}
   .mood button.active{background:var(--brand);color:#fff;border-color:var(--brand)}
   #moodResult{display:none;margin-top:10px;padding:14px 16px;background:linear-gradient(135deg,#eef1ff,#fff5f0);border-radius:14px;font-size:14.5px}
@@ -197,15 +202,15 @@
   }
 </style>
 </head>
-<body>
+<body class="dark">
 <div class="wrap">
   <header class="top">
     <div class="logo">
       <span class="dot">✦</span>
-      <div>Korea Soul Map<small data-i="brandsub">MBTI × Saju · by Vamos Travel Korea</small></div>
+      <div>Korea Soul Map<small data-i="brandsub">MBTI × Saju</small></div>
     </div>
     <div class="topright">
-      <button class="themetoggle" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+      <button class="themetoggle" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
       <div class="langtoggle">
         <button id="btnEn" class="active" onclick="setLang('en')">EN</button>
         <button id="btnEs" onclick="setLang('es')">ES</button>
@@ -254,8 +259,13 @@
         <input id="dob" type="date" value="1995-05-15">
       </div>
       <div>
-        <label class="field" data-i="lblTime">Time of birth</label>
-        <input id="tob" type="time" value="08:30">
+        <label class="field" data-i="lblTime">Time of birth <small>(24h)</small></label>
+        <div class="timegrid">
+          <select id="tobH" aria-label="hour"></select>
+          <span class="tcolon">:</span>
+          <select id="tobM" aria-label="minute"></select>
+          <span class="ampm" id="ampm"></span>
+        </div>
         <div class="checkrow"><input id="noTime" type="checkbox"><label for="noTime" data-i="noTime">I don't know my birth time</label></div>
       </div>
       <div>
@@ -356,7 +366,7 @@
 
     <div class="card">
       <h2>📸 <span data-i="r_share">Share your Soul Map</span></h2>
-      <p class="sub" data-i="shareSub">Save this card and post it on Instagram — tag @vamostravelkorea!</p>
+      <p class="sub" data-i="shareSub">Save this card and share it on Instagram!</p>
       <div id="shareCanvas"></div>
       <button class="btn ghost" style="margin-top:16px" onclick="downloadCard()">⬇️ <span data-i="shareBtn">Download image (1080×1080)</span></button>
     </div>
@@ -369,7 +379,7 @@
     </div>
   </div>
 
-  <footer>Made with 💜 for travelers in Korea · <b>Vamos Travel Korea</b></footer>
+  <footer>✦ <b>Korea Soul Map</b> · just for fun &amp; self-reflection</footer>
 </div>
 
 <!-- MINI MBTI QUIZ -->
@@ -393,7 +403,7 @@
 <script>
 /* ===================== i18n ===================== */
 const I18N = {
-  brandsub:{en:"MBTI × Saju · by Vamos Travel Korea",es:"MBTI × Saju · por Vamos Travel Korea"},
+  brandsub:{en:"MBTI × Saju",es:"MBTI × Saju"},
   heroTitle:{en:"Discover your Korean Soul Map",es:"Descubre tu Mapa del Alma Coreano"},
   heroSub:{en:"Your MBTI + Korean Saju (Four Pillars), turned into one clear report — with a personal mental-care guide.",es:"Tu MBTI + el Saju coreano (Cuatro Pilares) en un solo informe claro, con una guía personal de bienestar mental."},
   formTitle:{en:"Your details",es:"Tus datos"},
@@ -442,7 +452,7 @@ const I18N = {
   explainWhy:{en:"<b>Why MBTI + Saju?</b> MBTI shows how your mind works today; Saju shows the energy you were born with. Together they give a fuller, more personal picture — and a mental-care plan that actually fits you.",es:"<b>¿Por qué MBTI + Saju?</b> El MBTI muestra cómo funciona tu mente hoy; el Saju, la energía con la que naciste. Juntos dan una imagen más completa y personal, y un plan de bienestar mental que de verdad encaja contigo."},
   pillarsHelp:{en:"<b>How to read it:</b> each pillar = two characters (a \"stem\" on top, a \"branch\" below), each carrying one element. The top of your <b>Day</b> pillar is your <b>day-master</b> — the heart of who you are.",es:"<b>Cómo leerlo:</b> cada pilar = dos caracteres (un \"tallo\" arriba y una \"rama\" abajo), cada uno con un elemento. La parte superior de tu pilar del <b>Día</b> es tu <b>maestro del día</b>: el corazón de quién eres."},
   r_share:{en:"Share your Soul Map",es:"Comparte tu Mapa del Alma"},
-  shareSub:{en:"Save this card and post it on Instagram — tag @vamostravelkorea!",es:"Guarda esta tarjeta y publícala en Instagram — etiqueta a @vamostravelkorea!"},
+  shareSub:{en:"Save this card and share it on Instagram!",es:"¡Guarda esta tarjeta y compártela en Instagram!"},
   shareBtn:{en:"Download image (1080×1080)",es:"Descargar imagen (1080×1080)"},
   r_premium:{en:"Deep Reading",es:"Lectura Profunda"},
   unlockedTag:{en:"Unlocked",es:"Desbloqueado"},
@@ -482,6 +492,7 @@ function setLang(l){
   document.querySelectorAll('[data-i]').forEach(el=>{
     const k=el.getAttribute('data-i'); if(I18N[k]) el.innerHTML=I18N[k][l];
   });
+  updateAmpm();
   if(document.getElementById('report').style.display==='block') generate(true);
   const qo=document.getElementById('quizOverlay');
   if(qo && qo.classList.contains('show') && qi<QUIZ.length) renderQuiz();
@@ -648,8 +659,8 @@ function shareCardSVG(d){
     <text x="540" y="818" text-anchor="middle" font-size="26" font-weight="600" fill="#c9b8ff">${esc(d.mbti)} · ${esc(d.nick)} · ${esc(EL_NAME[d.el][LANG])}</text>
     <text text-anchor="middle" font-size="30" font-weight="500" fill="rgba(255,255,255,0.92)">${soul}</text>
     <line x1="380" y1="956" x2="700" y2="956" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-    <text x="540" y="998" text-anchor="middle" font-size="23" letter-spacing="3" font-weight="700" fill="#ffd6a8">VAMOS TRAVEL KOREA</text>
-    <text x="540" y="1028" text-anchor="middle" font-size="20" letter-spacing="2" fill="rgba(255,255,255,0.55)">vamosajeju.com</text>
+    <text x="540" y="998" text-anchor="middle" font-size="24" letter-spacing="3" font-weight="800" fill="#ffd6a8">KOREA SOUL MAP</text>
+    <text x="540" y="1028" text-anchor="middle" font-size="20" letter-spacing="2" fill="rgba(255,255,255,0.55)">mbtisaju.vercel.app</text>
   </svg>`;
 }
 function downloadCard(){
@@ -676,7 +687,7 @@ const STRIPE_LINK = "https://buy.stripe.com/REPLACE_WITH_YOUR_LINK";
 function T(k){return I18N[k]?I18N[k][LANG]:k;}
 function isUnlocked(){try{return localStorage.getItem('ksm_unlocked')==='1';}catch(e){return false;}}
 function saveInputs(){try{localStorage.setItem('ksm_input',JSON.stringify({
-  dob:document.getElementById('dob').value, tob:document.getElementById('tob').value,
+  dob:document.getElementById('dob').value, tobH:document.getElementById('tobH').value, tobM:document.getElementById('tobM').value,
   noTime:document.getElementById('noTime').checked, gender:document.getElementById('gender').value,
   mbti:document.getElementById('mbti').value, focus:document.getElementById('focus').value,
   name:document.getElementById('name').value, lang:LANG }));}catch(e){}}
@@ -793,6 +804,23 @@ function toggleTheme(){
   document.getElementById('themeBtn').textContent = dark?'☀️':'🌙';
   try{localStorage.setItem('ksm_theme',dark?'dark':'light');}catch(e){}
 }
+
+/* ===================== 24-hour time input + auto AM/PM ===================== */
+function updateAmpm(){
+  var H=document.getElementById('tobH'); if(!H) return;
+  var h=parseInt(H.value,10)||0;
+  var el=document.getElementById('ampm');
+  if(el) el.textContent = h<12 ? (LANG==='es'?'a. m.':'AM') : (LANG==='es'?'p. m.':'PM');
+}
+function initTime(){
+  var H=document.getElementById('tobH'), M=document.getElementById('tobM');
+  if(!H||!M||H.options.length) return;
+  for(var i=0;i<24;i++){var o=document.createElement('option');o.value=i;o.textContent=(i<10?'0':'')+i;H.appendChild(o);}
+  for(var j=0;j<60;j++){var p=document.createElement('option');p.value=j;p.textContent=(j<10?'0':'')+j;M.appendChild(p);}
+  H.value=8; M.value=30;
+  H.addEventListener('change',updateAmpm); M.addEventListener('change',updateAmpm);
+  updateAmpm();
+}
 const EL_CORE={
  wood:{en:"a Wood day-master — growth-driven, principled and visionary. You like to plan, build and move things forward.",es:"un maestro del día Madera: orientado al crecimiento, con principios y visión. Te gusta planear, construir y hacer avanzar las cosas."},
  fire:{en:"a Fire day-master — warm, expressive and magnetic. You bring energy into a room and connect people naturally.",es:"un maestro del día Fuego: cálido, expresivo y magnético. Llevas energía a cualquier lugar y conectas a la gente con naturalidad."},
@@ -869,10 +897,10 @@ let lastInput=null;
 function generate(rerenderOnly){
   const dob=document.getElementById('dob').value;
   if(!dob){alert(LANG==='en'?'Please enter your date of birth.':'Por favor ingresa tu fecha de nacimiento.');return;}
-  const hasTime=!document.getElementById('noTime').checked && document.getElementById('tob').value!=='';
-  const tob=document.getElementById('tob').value||'12:00';
+  const hasTime=!document.getElementById('noTime').checked;
   const [Y,M,D]=dob.split('-').map(Number);
-  const [hh,mm]=tob.split(':').map(Number);
+  const hh=parseInt(document.getElementById('tobH').value,10)||0;
+  const mm=parseInt(document.getElementById('tobM').value,10)||0;
   const mbti=document.getElementById('mbti').value;
   const focus=document.getElementById('focus').value;
   const name=document.getElementById('name').value.trim();
@@ -1040,10 +1068,11 @@ function useQuiz(){
   closeQuiz();
   document.getElementById('mbti').scrollIntoView({block:'center',behavior:'smooth'});
 }
+initTime();
 setLang('en');
 
-// restore saved theme
-try{ if(localStorage.getItem('ksm_theme')==='dark'){ document.body.classList.add('dark'); document.getElementById('themeBtn').textContent='☀️'; } }catch(e){}
+// restore saved theme (dark is the default)
+try{ if(localStorage.getItem('ksm_theme')==='light'){ document.body.classList.remove('dark'); document.getElementById('themeBtn').textContent='🌙'; } else { document.body.classList.add('dark'); document.getElementById('themeBtn').textContent='☀️'; } }catch(e){}
 
 // payment return + persistent unlock (device-level, fine for a light test)
 (function(){
@@ -1059,7 +1088,9 @@ try{ if(localStorage.getItem('ksm_theme')==='dark'){ document.body.classList.add
         var s=JSON.parse(raw);
         if(s.lang && s.lang!==LANG) setLang(s.lang);
         if(s.dob) document.getElementById('dob').value=s.dob;
-        if(s.tob) document.getElementById('tob').value=s.tob;
+        if(s.tobH!=null) document.getElementById('tobH').value=s.tobH;
+        if(s.tobM!=null) document.getElementById('tobM').value=s.tobM;
+        updateAmpm();
         document.getElementById('noTime').checked=!!s.noTime;
         if(s.gender) document.getElementById('gender').value=s.gender;
         if(s.mbti) document.getElementById('mbti').value=s.mbti;
