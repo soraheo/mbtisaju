@@ -1,5 +1,3 @@
-# Korea Soul Map
+# Saju Compass
 
-MBTI + Korean Saju (Four Pillars) report with mental-care guide, archetype name, shareable Instagram card, and a $2.50 "Deep Reading" unlock. Bilingual EN/ES, light/dark theme. Runs fully in-browser.
-
-By Vamos Travel Korea · vamosajeju.com
+MBTI + Korean Saju (Four Pillars) report with mental-care guide, archetype, shareable card, and a $2.50 Deep Reading unlock. Bilingual EN/ES, dark/light theme. Runs fully in-browser.

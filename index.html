@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Korea Soul Map · MBTI + Saju Report</title>
+<title>Saju Compass · MBTI + Korean Saju Report</title>
 <style>
   :root{
     --bg1:#0f172a; --bg2:#1e293b;
@@ -207,7 +207,7 @@
   <header class="top">
     <div class="logo">
       <span class="dot">✦</span>
-      <div>Korea Soul Map<small data-i="brandsub">MBTI × Saju</small></div>
+      <div>Saju Compass<small data-i="brandsub">MBTI × Saju</small></div>
     </div>
     <div class="topright">
       <button class="themetoggle" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">☀️</button>
@@ -219,7 +219,7 @@
   </header>
 
   <div class="hero">
-    <h1 data-i="heroTitle">Discover your Korean Soul Map</h1>
+    <h1 data-i="heroTitle">Your Korean Saju Compass</h1>
     <p data-i="heroSub">Your MBTI + Korean Saju (Four Pillars), turned into one clear report — with a personal mental-care guide.</p>
   </div>
 
@@ -365,7 +365,7 @@
     </div>
 
     <div class="card">
-      <h2>📸 <span data-i="r_share">Share your Soul Map</span></h2>
+      <h2>📸 <span data-i="r_share">Share your result</span></h2>
       <p class="sub" data-i="shareSub">Save this card and share it on Instagram!</p>
       <div id="shareCanvas"></div>
       <button class="btn ghost" style="margin-top:16px" onclick="downloadCard()">⬇️ <span data-i="shareBtn">Download image (1080×1080)</span></button>
@@ -379,7 +379,7 @@
     </div>
   </div>
 
-  <footer>✦ <b>Korea Soul Map</b> · just for fun &amp; self-reflection</footer>
+  <footer>✦ <b>Saju Compass</b> · just for fun &amp; self-reflection</footer>
 </div>
 
 <!-- MINI MBTI QUIZ -->
@@ -404,7 +404,7 @@
 /* ===================== i18n ===================== */
 const I18N = {
   brandsub:{en:"MBTI × Saju",es:"MBTI × Saju"},
-  heroTitle:{en:"Discover your Korean Soul Map",es:"Descubre tu Mapa del Alma Coreano"},
+  heroTitle:{en:"Your Korean Saju Compass",es:"Tu Brújula del Saju Coreano"},
   heroSub:{en:"Your MBTI + Korean Saju (Four Pillars), turned into one clear report — with a personal mental-care guide.",es:"Tu MBTI + el Saju coreano (Cuatro Pilares) en un solo informe claro, con una guía personal de bienestar mental."},
   formTitle:{en:"Your details",es:"Tus datos"},
   formSub:{en:"Takes 30 seconds. Nothing is stored — everything runs in your browser.",es:"Toma 30 segundos. No se guarda nada: todo ocurre en tu navegador."},
@@ -451,7 +451,7 @@ const I18N = {
   exC_b:{en:"Wood, Fire, Earth, Metal, Water. Which ones run strong or missing in you shapes your strengths and stress style.",es:"Madera, Fuego, Tierra, Metal, Agua. Cuáles predominan o faltan en ti moldea tus fortalezas y tu forma de estrés."},
   explainWhy:{en:"<b>Why MBTI + Saju?</b> MBTI shows how your mind works today; Saju shows the energy you were born with. Together they give a fuller, more personal picture — and a mental-care plan that actually fits you.",es:"<b>¿Por qué MBTI + Saju?</b> El MBTI muestra cómo funciona tu mente hoy; el Saju, la energía con la que naciste. Juntos dan una imagen más completa y personal, y un plan de bienestar mental que de verdad encaja contigo."},
   pillarsHelp:{en:"<b>How to read it:</b> each pillar = two characters (a \"stem\" on top, a \"branch\" below), each carrying one element. The top of your <b>Day</b> pillar is your <b>day-master</b> — the heart of who you are.",es:"<b>Cómo leerlo:</b> cada pilar = dos caracteres (un \"tallo\" arriba y una \"rama\" abajo), cada uno con un elemento. La parte superior de tu pilar del <b>Día</b> es tu <b>maestro del día</b>: el corazón de quién eres."},
-  r_share:{en:"Share your Soul Map",es:"Comparte tu Mapa del Alma"},
+  r_share:{en:"Share your result",es:"Comparte tu resultado"},
   shareSub:{en:"Save this card and share it on Instagram!",es:"¡Guarda esta tarjeta y compártela en Instagram!"},
   shareBtn:{en:"Download image (1080×1080)",es:"Descargar imagen (1080×1080)"},
   r_premium:{en:"Deep Reading",es:"Lectura Profunda"},
@@ -649,7 +649,7 @@ function shareCardSVG(d){
     </defs>
     <rect width="1080" height="1080" fill="url(#bg)"/>
     <rect width="1080" height="1080" fill="url(#glow)"/>
-    <text x="540" y="90" text-anchor="middle" font-size="30" font-weight="800" letter-spacing="8" fill="#ffd6a8">KOREA SOUL MAP</text>
+    <text x="540" y="90" text-anchor="middle" font-size="30" font-weight="800" letter-spacing="8" fill="#ffd6a8">SAJU COMPASS</text>
     <text x="540" y="128" text-anchor="middle" font-size="22" letter-spacing="3" fill="rgba(255,255,255,0.6)">${subtitle}</text>
     ${grid}${spokes}
     <polygon points="${dataPts}" fill="url(#df)" stroke="#cbbcff" stroke-width="3" stroke-linejoin="round"/>
@@ -659,7 +659,7 @@ function shareCardSVG(d){
     <text x="540" y="818" text-anchor="middle" font-size="26" font-weight="600" fill="#c9b8ff">${esc(d.mbti)} · ${esc(d.nick)} · ${esc(EL_NAME[d.el][LANG])}</text>
     <text text-anchor="middle" font-size="30" font-weight="500" fill="rgba(255,255,255,0.92)">${soul}</text>
     <line x1="380" y1="956" x2="700" y2="956" stroke="rgba(255,255,255,0.18)" stroke-width="1.5"/>
-    <text x="540" y="998" text-anchor="middle" font-size="24" letter-spacing="3" font-weight="800" fill="#ffd6a8">KOREA SOUL MAP</text>
+    <text x="540" y="998" text-anchor="middle" font-size="24" letter-spacing="3" font-weight="800" fill="#ffd6a8">SAJU COMPASS</text>
     <text x="540" y="1028" text-anchor="middle" font-size="20" letter-spacing="2" fill="rgba(255,255,255,0.55)">mbtisaju.vercel.app</text>
   </svg>`;
 }
@@ -673,7 +673,7 @@ function downloadCard(){
     const c=document.createElement('canvas'); c.width=1080; c.height=1080;
     const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,1080,1080);
     const a=document.createElement('a');
-    a.download='korea-soul-map.png';
+    a.download='saju-compass.png';
     a.href=c.toDataURL('image/png'); a.click();
   };
   img.onerror=function(){ alert(LANG==='en'?'Could not build the image — try a screenshot instead.':'No se pudo generar la imagen — intenta una captura de pantalla.'); };
