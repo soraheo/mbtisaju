@@ -120,6 +120,9 @@
   .archetype{text-align:center;margin:0 0 16px}
   .archlabel{font-size:11px;letter-spacing:3px;color:var(--muted);font-weight:800}
   .archname{font-size:26px;font-weight:800;background:linear-gradient(120deg,#5b4bf0,#ff7a59);-webkit-background-clip:text;background-clip:text;color:transparent;margin-top:3px;line-height:1.2}
+  .cb{margin:0 0 13px}
+  .cb-lead{color:var(--brand);font-weight:800;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase}
+  .corenote{font-size:13px;color:var(--muted);background:var(--soft);border-radius:10px;padding:10px 13px;margin:8px 0 0;line-height:1.55}
   /* teaser + locked rows (sajufy-style funnel) */
   .pteaser{background:var(--soft);border-radius:14px;padding:14px 16px;margin-bottom:14px}
   .pteaser-label{font-size:11px;letter-spacing:2px;font-weight:800;color:var(--brand);margin-bottom:6px}
@@ -316,7 +319,7 @@
         <h3>🧭 <span data-i="r_core">Core personality</span></h3>
         <div class="archetype" id="archetype"></div>
         <div id="coreTags"></div>
-        <p id="coreText"></p>
+        <div id="coreText"></div>
       </div>
       <div class="section">
         <h3>💞 <span data-i="r_love">Love & Marriage</span></h3>
@@ -481,6 +484,10 @@ const I18N = {
   p_luckNote:{en:"Lean on {el} — its color, day and direction recharge your weakest energy.",es:"Apóyate en {el}: su color, día y dirección recargan tu energía más débil."},
   p_plan:{en:"Premium 7-day mental reset",es:"Reinicio mental premium de 7 días"},
   archLabel:{en:"YOUR ARCHETYPE",es:"TU ARQUETIPO"},
+  coreMbti:{en:"The MBTI side",es:"El lado MBTI"},
+  coreSaju:{en:"The Saju side",es:"El lado Saju"},
+  coreBlend:{en:"The blend · 50/50",es:"La mezcla · 50/50"},
+  coreMeet:{en:"Where your two sides meet",es:"Donde se encuentran tus dos lados"},
   teaserLabel:{en:"A GLIMPSE OF YOUR 2026",es:"UN VISTAZO A TU 2026"},
 };
 let LANG='en';
@@ -828,6 +835,61 @@ const EL_CORE={
  metal:{en:"a Metal day-master — disciplined, sharp and fair. You value clarity, quality and doing things right.",es:"un maestro del día Metal: disciplinado, agudo y justo. Valoras la claridad, la calidad y hacer las cosas bien."},
  water:{en:"a Water day-master — adaptable, intuitive and deep. You read people and situations before they speak.",es:"un maestro del día Agua: adaptable, intuitivo y profundo. Lees a las personas y las situaciones antes de que hablen."}
 };
+// ===== Core personality (MBTI 50 / Saju 50) — richer + conflict + edge cases =====
+const EL_LEAN={wood:{ei:'E',tf:'T'},fire:{ei:'E',tf:'F'},earth:{ei:'I',tf:'F'},metal:{ei:'I',tf:'T'},water:{ei:'I',tf:'F'}};
+const EL_FLOW={E:{en:"outward and expressive",es:"hacia afuera y expresiva"},I:{en:"inward and reflective",es:"hacia adentro y reflexiva"}};
+const MBTI_AXIS={
+ E:{en:"draw energy from people and the outer world",es:"recargas energía con la gente y el mundo exterior"},
+ I:{en:"recharge in your inner world and quiet",es:"recargas en tu mundo interior y en la calma"},
+ S:{en:"trust concrete facts, details and the present",es:"confías en los hechos concretos, los detalles y el presente"},
+ N:{en:"are pulled toward patterns, meaning and what could be",es:"te atraen los patrones, el significado y lo que podría ser"},
+ T:{en:"decide by logic and what's fair",es:"decides con lógica y con lo que es justo"},
+ F:{en:"decide by your values and how people feel",es:"decides con tus valores y cómo se siente la gente"},
+ J:{en:"like life planned, decided and structured",es:"prefieres la vida planificada, decidida y estructurada"},
+ P:{en:"keep things open, flexible and spontaneous",es:"mantienes todo abierto, flexible y espontáneo"}
+};
+const HARM={
+ bothE:{en:"Double outward energy — both your MBTI and your {el} day-master push you toward people, expression and action. Magnetic and driven; just guard against burnout and saying yes to too much.",es:"Doble energía hacia afuera: tanto tu MBTI como tu maestro del día {el} te empujan hacia la gente, la expresión y la acción. Magnética y con impulso; solo cuídate del agotamiento y de decir que sí a demasiado."},
+ bothI:{en:"Double inward energy — both your MBTI and your {el} day-master are reflective and self-contained. You go deep and recharge alone, a real gift for focus; just make sure you still reach out so you don't over-isolate.",es:"Doble energía hacia adentro: tanto tu MBTI como tu maestro del día {el} son reflexivos y autosuficientes. Vas a lo profundo y recargas en soledad, un don para la concentración; solo asegúrate de seguir buscando a los demás para no aislarte de más."},
+ eVsI:{en:"A real tension worth knowing: your MBTI is extraverted, but your {el} day-master runs inward. You likely come across as social and outgoing, yet your core quietly recharges in solitude — you give energy out, then need to retreat. Honor both: shine in public, then protect real alone-time without guilt.",es:"Una tensión real que conviene conocer: tu MBTI es extravertido, pero tu maestro del día {el} fluye hacia adentro. Probablemente pareces social y abierta, pero tu núcleo recarga en silencio y en soledad: das energía y luego necesitas retirarte. Honra ambos lados: brilla en público y luego protege tu tiempo a solas, sin culpa."},
+ iVsE:{en:"A subtle tension worth knowing: your MBTI is introverted, but your {el} day-master carries outward, expressive energy. There's a livelier, more magnetic side in you than people first meet — it wants an outlet. Let it out where it feels safe; you don't have to be 'on' all the time, but don't bottle it either.",es:"Una tensión sutil que vale la pena conocer: tu MBTI es introvertido, pero tu maestro del día {el} lleva una energía expresiva hacia afuera. Hay un lado más vivo y magnético del que la gente ve al principio, y quiere una salida. Déjalo salir donde te sientas segura; no tienes que estar 'encendida' todo el tiempo, pero tampoco lo reprimas."},
+ bothF:{en:"Feeling-led on both sides — your MBTI and your {el} day-master are both warm and values-driven. Deeply empathetic and attuned to others; your main task is protecting yourself from absorbing everyone else's emotions.",es:"Guiada por el sentir en ambos lados: tu MBTI y tu maestro del día {el} son cálidos y guiados por valores. Muy empática y sintonizada con los demás; tu tarea principal es protegerte de absorber las emociones de todos."},
+ bothT:{en:"Clarity on both sides — your MBTI and your {el} day-master both prize logic, fairness and structure. Sharp and principled; just remember to show warmth out loud, so people feel it and don't only respect it.",es:"Claridad en ambos lados: tu MBTI y tu maestro del día {el} valoran la lógica, la justicia y la estructura. Aguda y con principios; solo recuerda mostrar calidez en voz alta, para que la gente la sienta y no solo la respete."},
+ tVsF:{en:"Head meets heart: your MBTI decides by logic, but your {el} day-master is warm and feeling-led. You can analyze coolly and still care deeply — your growth edge is letting your warmth show, not just your reasoning.",es:"La cabeza se encuentra con el corazón: tu MBTI decide con lógica, pero tu maestro del día {el} es cálido y guiado por el sentir. Puedes analizar con frialdad y aun así querer con profundidad; tu reto es dejar ver tu calidez, no solo tu razonamiento."},
+ fVsT:{en:"Heart meets head: your MBTI leads with feeling, but your {el} day-master brings sharpness and structure. You feel things strongly yet can think clearly under pressure — trust that cooler, logical side when emotions run high.",es:"El corazón se encuentra con la cabeza: tu MBTI se guía por el sentir, pero tu maestro del día {el} aporta agudeza y estructura. Sientes con intensidad pero puedes pensar con claridad bajo presión; confía en ese lado más frío y lógico cuando las emociones se disparan."}
+};
+const CORE_NOTE={
+ notime:{en:"⏱️ You didn't enter a birth time, so your <b>Hour pillar</b> is missing — this reading uses your Year, Month and Day. Add your exact birth time for the most precise picture.",es:"⏱️ No ingresaste una hora de nacimiento, así que falta tu <b>pilar de la Hora</b>: esta lectura usa tu año, mes y día. Agrega tu hora exacta para el retrato más preciso."},
+ dominant:{en:"🔆 Your core element <b>{el}</b> is also the strongest energy in your whole chart — so these traits are amplified and very pronounced in you.",es:"🔆 Tu elemento central <b>{el}</b> es también la energía más fuerte de toda tu carta, así que estos rasgos están amplificados y muy marcados en ti."},
+ scarce:{en:"🌗 Your core element <b>{el}</b> is scarce elsewhere in your chart — your identity runs on {el}, but it isn't heavily reinforced, so these traits can come in waves or need recharging.",es:"🌗 Tu elemento central <b>{el}</b> escasea en el resto de tu carta: tu identidad funciona con {el}, pero no está muy reforzada, así que estos rasgos pueden venir en oleadas o necesitar recarga."}
+};
+function coreHTML(d){
+  const L=LANG, lean=EL_LEAN[d.el], elName=EL_NAME[d.el][L], m=d.mbti, rep=function(s){return s.replace(/\{el\}/g,elName);};
+  const mbtiTxt = L==='en'
+    ? `As an <b>${m}</b> (${d.nick}), you ${MBTI_AXIS[m[0]][L]}, ${MBTI_AXIS[m[1]][L]}, ${MBTI_AXIS[m[2]][L]}, and ${MBTI_AXIS[m[3]][L]}.`
+    : `Como <b>${m}</b> (${d.nick}), ${MBTI_AXIS[m[0]][L]}, ${MBTI_AXIS[m[1]][L]}, ${MBTI_AXIS[m[2]][L]} y ${MBTI_AXIS[m[3]][L]}.`;
+  const flow=EL_FLOW[lean.ei][L];
+  const sajuTxt = L==='en'
+    ? `Your Saju day-master is <b>${d.dayHan} ${d.dayRo}</b> — ${EL_CORE[d.el][L]} It's a ${d.yy==='yang'?'yang':'yin'} ${elName} energy that moves ${flow}.`
+    : `Tu maestro del día en el Saju es <b>${d.dayHan} ${d.dayRo}</b> — ${EL_CORE[d.el][L]} Es una energía ${elName} ${d.yy==='yang'?'yang':'yin'} que fluye ${flow}.`;
+  const blendTxt = L==='en'
+    ? `Weighted 50/50, you live as <b>${d.nick}</b> and a <b>${elName}</b> soul at the same time — a specific, uncommon mix where each side colors the other.`
+    : `A partes iguales (50/50), vives como <b>${d.nick}</b> y como un alma <b>${elName}</b> a la vez: una mezcla específica y poco común donde cada lado tiñe al otro.`;
+  var harm=[];
+  harm.push(m[0]===lean.ei ? (lean.ei==='E'?HARM.bothE[L]:HARM.bothI[L]) : (m[0]==='E'?HARM.eVsI[L]:HARM.iVsE[L]));
+  harm.push(m[2]===lean.tf ? (lean.tf==='F'?HARM.bothF[L]:HARM.bothT[L]) : (m[2]==='T'?HARM.tVsF[L]:HARM.fVsT[L]));
+  harm=harm.map(rep);
+  var notes='';
+  const cnt=d.tally[d.el];
+  if(cnt>=3) notes+=`<div class="corenote">${rep(CORE_NOTE.dominant[L])}</div>`;
+  else if(cnt<=1) notes+=`<div class="corenote">${rep(CORE_NOTE.scarce[L])}</div>`;
+  if(!d.hasTime) notes+=`<div class="corenote">${CORE_NOTE.notime[L]}</div>`;
+  return `<p class="cb"><span class="cb-lead">🧠 ${T('coreMbti')}</span><br>${mbtiTxt}</p>`
+    +`<p class="cb"><span class="cb-lead">🔮 ${T('coreSaju')}</span><br>${sajuTxt}</p>`
+    +`<p class="cb"><span class="cb-lead">✦ ${T('coreBlend')}</span><br>${blendTxt}</p>`
+    +`<p class="cb"><span class="cb-lead">⚖️ ${T('coreMeet')}</span><br>${harm.join('<br><br>')}</p>`
+    + notes;
+}
 const EL_LOVE={
  wood:{en:"In love you give direction and grow alongside your partner — you commit to a shared future. Watch a tendency to 'improve' your partner; let them be as they are. A calm, steady partner who appreciates your drive suits you best.",es:"En el amor das dirección y creces junto a tu pareja: te comprometes con un futuro compartido. Cuidado con querer 'mejorar' a tu pareja; déjala ser como es. Te conviene alguien tranquilo y constante que valore tu impulso."},
  fire:{en:"You love passionately and openly — affection, warmth and fun matter to you. The risk is burning hot then cooling fast, so choose someone who keeps you grounded and feels safe enough for the spark to last.",es:"Amas con pasión y franqueza: el cariño, la calidez y la diversión te importan. El riesgo es encenderte mucho y enfriarte rápido; elige a alguien que te dé estabilidad y seguridad para que la chispa dure."},
@@ -950,9 +1012,7 @@ function generate(rerenderOnly){
   document.getElementById('archetype').innerHTML = `<div class="archlabel">${T('archLabel')}</div><div class="archname">✦ ${archetype(mbti,el)}</div>`;
   document.getElementById('coreTags').innerHTML =
     `<span class="tag">${mbti} · ${mb.nick[LANG]}</span><span class="tag">${EL_NAME[el][LANG]} ${saju.dayMaster.yy==='yang'?'⊕':'⊖'}</span><span class="tag">${saju.dayMaster.han} ${saju.dayMaster.ro}</span>`;
-  document.getElementById('coreText').innerHTML = LANG==='en'
-    ? `As an <b>${mbti}</b> you are ${mb.line[LANG]}. In Saju you are ${EL_CORE[el][LANG]} Together this means your personality runs on ${mb.line[LANG]} energy, steadied (or stretched) by your ${EL_NAME[el][LANG]} nature — a rare, specific blend that's worth leaning into.`
-    : `Como <b>${mbti}</b> eres ${mb.line[LANG]}. En el Saju eres ${EL_CORE[el][LANG]} Juntos significan que tu personalidad funciona con energía ${mb.line[LANG]}, equilibrada (o tensada) por tu naturaleza ${EL_NAME[el][LANG]}: una mezcla única y específica que vale la pena aprovechar.`;
+  document.getElementById('coreText').innerHTML = coreHTML({mbti:mbti, nick:mb.nick[LANG], el:el, dayHan:saju.dayMaster.han, dayRo:saju.dayMaster.ro, yy:saju.dayMaster.yy, tally:saju.tally, hasTime:hasTime});
 
   document.getElementById('loveText').innerHTML = EL_LOVE[el][LANG];
   document.getElementById('moneyText').innerHTML = EL_MONEY[el][LANG];
