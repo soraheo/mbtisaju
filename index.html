@@ -333,6 +333,14 @@
         <h3>🌟 <span data-i="r_career">Strengths & Direction</span></h3>
         <p id="careerText"></p>
       </div>
+      <div class="section">
+        <h3>🌿 <span data-i="r_health">Health & Body</span></h3>
+        <div id="healthText"></div>
+      </div>
+      <div class="section">
+        <h3>🍀 <span data-i="r_luck">Your Lucky Keys</span></h3>
+        <div id="luckText"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -427,6 +435,12 @@ const I18N = {
   r_love:{en:"Love & Marriage",es:"Amor y matrimonio"},
   r_money:{en:"Money & Work",es:"Dinero y trabajo"},
   r_career:{en:"Strengths & Direction",es:"Fortalezas y dirección"},
+  r_health:{en:"Health & Body",es:"Salud y Cuerpo"},
+  r_luck:{en:"Your Lucky Keys",es:"Tus Claves de la Suerte"},
+  h_strongLead:{en:"💪 Your strongest element is <b>{el}</b> — its domain ({org}) tends to run robust.",es:"💪 Tu elemento más fuerte es <b>{el}</b> — su dominio ({org}) suele ir robusto."},
+  h_careLead:{en:"🩹 Your weakest element is <b>{el}</b> — its domain ({org}) is the area to care for.",es:"🩹 Tu elemento más débil es <b>{el}</b> — su dominio ({org}) es la zona a cuidar."},
+  h_balanced:{en:"Your five elements are unusually balanced — no single body system dominates. A steady, all-round routine suits you best.",es:"Tus cinco elementos están inusualmente equilibrados — ningún sistema corporal domina. Te conviene una rutina estable y completa."},
+  h_disclaimer:{en:"Traditional Saju lore for self-reflection — not medical advice.",es:"Saber tradicional del Saju para reflexión — no es consejo médico."},
   r_stress:{en:"Your Stress-Care Plan",es:"Tu plan de cuidado del estrés"},
   r_daily:{en:"Daily Mental Care",es:"Cuidado mental diario"},
   affirmLabel:{en:"TODAY'S AFFIRMATION",es:"AFIRMACIÓN DE HOY"},
@@ -762,14 +776,6 @@ function premiumHTML(d){
      <p class="pmatch">✅ ${T('p_match')}: <b>${goodNames}</b> &nbsp;·&nbsp; ❌ ${T('p_clash')}: <b>${badName}</b></p></div>
    <div class="pblock"><h4>💰 ${T('p_wealth')}</h4><p>${P.wealth[L]}</p>
      <p class="psmall">${T('p_wealthEl')}: <b>${EL_NAME[wealthEl][L]}</b></p></div>
-   <div class="pblock"><h4>🍀 ${T('p_luck')}</h4>
-     <div class="lucktable">
-       <div><span>${T('p_color')}</span><b>${EL_COLOR[luckEl][L]}</b></div>
-       <div><span>${T('p_dir')}</span><b>${EL_DIR[luckEl][L]}</b></div>
-       <div><span>${T('p_day')}</span><b>${EL_DAYW[luckEl][L]}</b></div>
-       <div><span>${T('p_num')}</span><b>${EL_NUM[luckEl]}</b></div>
-     </div>
-     <p class="psmall">${T('p_luckNote').replace('{el}',EL_NAME[luckEl][L])}</p></div>
    <div class="pblock"><h4>🧘 ${T('p_plan')}</h4><p>${P.mental[L]}</p></div>`;
 }
 function premiumTeaserHTML(d){
@@ -780,7 +786,6 @@ function premiumTeaserHTML(d){
     {ic:'📅',t:T('p_2026'),p:P.y2026[L]},
     {ic:'💞',t:T('p_love'),p:P.love[L]},
     {ic:'💰',t:T('p_wealth'),p:P.wealth[L]},
-    {ic:'🍀',t:T('p_luck'),p:T('lk4').replace(/^🍀\s*/,'')},
     {ic:'🧘',t:T('p_plan'),p:P.mental[L]}
   ];
   return `<div class="pteaser"><div class="pteaser-label">✨ ${T('teaserLabel')}</div><p>${hook}</p></div>`
@@ -889,6 +894,42 @@ function coreHTML(d){
     +`<p class="cb"><span class="cb-lead">✦ ${T('coreBlend')}</span><br>${blendTxt}</p>`
     +`<p class="cb"><span class="cb-lead">⚖️ ${T('coreMeet')}</span><br>${harm.join('<br><br>')}</p>`
     + notes;
+}
+// ===== Health & Body (오행 → 장부) =====
+const EL_HEALTH={
+ wood:{organ:{en:"liver, gallbladder, tendons & eyes",es:"hígado, vesícula, tendones y ojos"},
+  strong:{en:"Detox, flexibility and sharp vision come naturally — but too much Wood can mean tight muscles, tension headaches and irritability under stress. Move and stretch daily to release it.",es:"La desintoxicación, la flexibilidad y una vista aguda te salen naturales — pero demasiada Madera puede dar músculos tensos, dolores de cabeza por tensión e irritabilidad bajo estrés. Muévete y estira a diario para liberarlo."},
+  weak:{en:"Mind your liver/gallbladder, eyes and muscle tension — when depleted you can run stiff, headachey or short-fused. Gentle movement, greens and good sleep restore you.",es:"Cuida tu hígado/vesícula, los ojos y la tensión muscular — cuando te agotas puedes ir rígida, con dolor de cabeza o de mecha corta. El movimiento suave, los verdes y dormir bien te recuperan."}},
+ fire:{organ:{en:"heart, circulation, sleep & spirit",es:"corazón, circulación, sueño y ánimo"},
+  strong:{en:"Vitality, circulation and warmth come easily — but excess Fire can spike anxiety, palpitations, insomnia and overheating. Cool, slow evenings keep it in balance.",es:"La vitalidad, la circulación y la calidez te salen fáciles — pero el exceso de Fuego puede disparar ansiedad, palpitaciones, insomnio y sofocos. Las noches frescas y lentas lo equilibran."},
+  weak:{en:"Mind your heart, circulation and sleep — low Fire can mean cold hands, low mood, poor circulation and restless sleep. Warmth, joy and gentle cardio lift you.",es:"Cuida tu corazón, la circulación y el sueño — el Fuego bajo puede dar manos frías, ánimo bajo, mala circulación y sueño inquieto. La calidez, la alegría y el cardio suave te elevan."}},
+ earth:{organ:{en:"stomach, spleen, digestion & muscles",es:"estómago, bazo, digestión y músculos"},
+  strong:{en:"Steady digestion and stamina are strengths — but heavy Earth can bring bloating, sluggishness and worry that loops. Regular movement and lighter meals help.",es:"La digestión estable y la resistencia son fortalezas — pero la Tierra pesada puede traer hinchazón, pesadez y preocupación en bucle. El movimiento regular y las comidas ligeras ayudan."},
+  weak:{en:"Mind your stomach and digestion — low Earth can mean a sensitive gut, low appetite, fatigue and overthinking. Warm, regular meals and grounding routines steady you.",es:"Cuida tu estómago y digestión — la Tierra baja puede dar un intestino sensible, poco apetito, fatiga y darle vueltas a todo. Las comidas cálidas y regulares y las rutinas con raíces te estabilizan."}},
+ metal:{organ:{en:"lungs, large intestine, skin & sinuses",es:"pulmones, intestino grueso, piel y senos nasales"},
+  strong:{en:"Strong lungs, skin and immunity — but excess Metal can show as dryness, rigidity and holding onto grief. Deep breathing and letting go keep you supple.",es:"Pulmones, piel e inmunidad fuertes — pero el exceso de Metal puede mostrarse como sequedad, rigidez y aferrarse al duelo. La respiración profunda y soltar te mantienen flexible."},
+  weak:{en:"Mind your lungs, skin and sinuses — low Metal can mean respiratory sensitivity, dry skin, allergies and catching colds. Breathwork, hydration and fresh air protect you.",es:"Cuida tus pulmones, piel y senos nasales — el Metal bajo puede dar sensibilidad respiratoria, piel seca, alergias y resfriados. La respiración, la hidratación y el aire fresco te protegen."}},
+ water:{organ:{en:"kidneys, bladder, bones, ears & hormones",es:"riñones, vejiga, huesos, oídos y hormonas"},
+  strong:{en:"Deep reserves, stamina and willpower — but excess Water can pull you into fear, fatigue or hormonal swings. Warmth and steady routines balance it.",es:"Reservas profundas, resistencia y fuerza de voluntad — pero el exceso de Agua puede llevarte al miedo, la fatiga o los vaivenes hormonales. La calidez y las rutinas estables lo equilibran."},
+  weak:{en:"Mind your kidneys, lower back, knees and ears — low Water can mean burnout, weak bones/joints, feeling cold and fear under stress. Rest, warmth, minerals and hydration rebuild you.",es:"Cuida tus riñones, zona lumbar, rodillas y oídos — el Agua baja puede dar agotamiento, huesos/articulaciones débiles, sensación de frío y miedo bajo estrés. El descanso, la calidez, los minerales y la hidratación te reconstruyen."}}
+};
+function healthHTML(strong, weak, balanced){
+  const L=LANG;
+  if(balanced) return `<p class="cb">${T('h_balanced')}</p><div class="corenote">${T('h_disclaimer')}</div>`;
+  const s=EL_HEALTH[strong], w=EL_HEALTH[weak];
+  return `<p class="cb">${T('h_strongLead').replace('{el}',EL_NAME[strong][L]).replace('{org}',s.organ[L])} ${s.strong[L]}</p>`
+    +`<p class="cb">${T('h_careLead').replace('{el}',EL_NAME[weak][L]).replace('{org}',w.organ[L])} ${w.weak[L]}</p>`
+    +`<div class="corenote">${T('h_disclaimer')}</div>`;
+}
+function luckHTML(luckEl){
+  const L=LANG;
+  return `<div class="lucktable">
+     <div><span>${T('p_color')}</span><b>${EL_COLOR[luckEl][L]}</b></div>
+     <div><span>${T('p_dir')}</span><b>${EL_DIR[luckEl][L]}</b></div>
+     <div><span>${T('p_day')}</span><b>${EL_DAYW[luckEl][L]}</b></div>
+     <div><span>${T('p_num')}</span><b>${EL_NUM[luckEl]}</b></div>
+   </div>
+   <p class="psmall">${T('p_luckNote').replace('{el}',EL_NAME[luckEl][L])}</p>`;
 }
 const EL_LOVE={
  wood:{en:"In love you give direction and grow alongside your partner — you commit to a shared future. Watch a tendency to 'improve' your partner; let them be as they are. A calm, steady partner who appreciates your drive suits you best.",es:"En el amor das dirección y creces junto a tu pareja: te comprometes con un futuro compartido. Cuidado con querer 'mejorar' a tu pareja; déjala ser como es. Te conviene alguien tranquilo y constante que valore tu impulso."},
@@ -1021,6 +1062,10 @@ function generate(rerenderOnly){
   document.getElementById('careerText').innerHTML = LANG==='en'
     ? `Your sweet spot is where <b>${mb.nick[LANG]}</b> strengths (${mb.line[LANG]}) meet your ${EL_NAME[el][LANG]} drive. Build toward roles and projects that use both — and protect your ${missing.length?EL_NAME[weak][LANG]:EL_NAME[weak][LANG]} side, which is where you tire fastest.`
     : `Tu punto ideal está donde las fortalezas de <b>${mb.nick[LANG]}</b> (${mb.line[LANG]}) se unen con tu impulso ${EL_NAME[el][LANG]}. Avanza hacia roles y proyectos que usen ambos, y cuida tu lado ${EL_NAME[weak][LANG]}, donde te agotas más rápido.`;
+
+  // health & lucky keys
+  document.getElementById('healthText').innerHTML = healthHTML(strong, weak, saju.tally[strong]===saju.tally[weak]);
+  document.getElementById('luckText').innerHTML = luckHTML(weak);
 
   // stress
   document.getElementById('stressSub').textContent = LANG==='en'
