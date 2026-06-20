@@ -152,6 +152,17 @@
   .timegrid select{width:auto;flex:1;min-width:0}
   .tcolon{font-weight:800;color:var(--muted)}
   .ampm{font-size:13px;font-weight:800;color:var(--brand);flex:0 0 auto;min-width:38px;text-align:center}
+  /* demo payment popup */
+  .paycard{background:#fff;border-radius:20px;max-width:380px;width:100%;padding:24px;box-shadow:var(--shadow)}
+  body.dark .paycard{background:var(--card)}
+  .payhead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+  .payttl{font-weight:800;font-size:18px;color:var(--ink)}
+  .paysub{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .payhead>button{border:0;background:var(--soft);width:30px;height:30px;border-radius:8px;cursor:pointer;color:var(--muted);font-size:14px;flex-shrink:0}
+  .demopill{font-size:9px;font-weight:800;letter-spacing:1px;color:#fff;background:var(--accent);padding:2px 6px;border-radius:6px;vertical-align:middle;margin-left:4px}
+  .payrow{display:flex;justify-content:space-between;padding:11px 0;font-size:14.5px;border-top:1px solid var(--line);color:var(--ink)}
+  .paytotal{display:flex;justify-content:space-between;padding:11px 0;font-size:15px;font-weight:800;border-top:1px solid var(--line);margin-bottom:8px;color:var(--ink)}
+  .paynote{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
 
   /* report */
   #report{display:none}
@@ -411,6 +422,20 @@
   </div>
 </div>
 
+<!-- DEMO PAYMENT POPUP (until real Stripe is connected) -->
+<div id="payOverlay" class="overlay">
+  <div class="paycard">
+    <div class="payhead">
+      <div><div class="payttl">Saju Compass <span class="demopill">DEMO</span></div><div class="paysub" data-i="paySub">Deep Reading — full unlock</div></div>
+      <button onclick="closePay()" aria-label="close">✕</button>
+    </div>
+    <div class="payrow"><span data-i="payItem">Deep Reading</span><b>$2.50</b></div>
+    <div class="paytotal"><span data-i="payTotal">Total</span><b>$2.50</b></div>
+    <button class="btn" onclick="payDemo()">🔒 <span data-i="payBtn">Pay $2.50</span></button>
+    <div class="paynote" data-i="payNote">⚠️ Demo preview — no real charge. Your real Stripe checkout will go here once connected.</div>
+  </div>
+</div>
+
 <script>
 /* ===================== i18n ===================== */
 const I18N = {
@@ -482,6 +507,11 @@ const I18N = {
   lk5:{en:"🧘 Premium 7-day mental reset plan",es:"🧘 Plan premium de 7 días para reiniciar tu mente"},
   unlockBtn:{en:"Unlock for $2.50",es:"Desbloquear por $2.50"},
   lockNote:{en:"One-time · no subscription · secure payment via Stripe",es:"Pago único · sin suscripción · pago seguro con Stripe"},
+  paySub:{en:"Deep Reading — full unlock",es:"Lectura Profunda — desbloqueo completo"},
+  payItem:{en:"Deep Reading",es:"Lectura Profunda"},
+  payTotal:{en:"Total",es:"Total"},
+  payBtn:{en:"Pay $2.50",es:"Pagar $2.50"},
+  payNote:{en:"⚠️ Demo preview — no real charge. Your real Stripe checkout will go here once connected.",es:"⚠️ Vista previa de demo — sin cargo real. Aquí irá tu pago real con Stripe cuando lo conectes."},
   p_2026:{en:"Your 2026",es:"Tu 2026"},
   p_best:{en:"Best months",es:"Mejores meses"},
   p_caution:{en:"Caution",es:"Cuidado"},
@@ -713,12 +743,18 @@ function saveInputs(){try{localStorage.setItem('ksm_input',JSON.stringify({
   mbti:document.getElementById('mbti').value, focus:document.getElementById('focus').value,
   name:document.getElementById('name').value, lang:LANG }));}catch(e){}}
 function unlock(){
-  if(STRIPE_LINK.indexOf('REPLACE_WITH_YOUR_LINK')>=0){
-    alert(LANG==='en'?"Payment link not set yet. (Owner: paste your Stripe Payment Link into STRIPE_LINK in the code.)":"El enlace de pago aún no está configurado. (Dueña: pega tu enlace de pago de Stripe en STRIPE_LINK en el código.)");
-    return;
-  }
   saveInputs();
+  if(STRIPE_LINK.indexOf('REPLACE_WITH_YOUR_LINK')>=0){ openPay(); return; }  // demo until real Stripe link is set
   window.location.href = STRIPE_LINK;
+}
+function openPay(){ document.getElementById('payOverlay').classList.add('show'); }
+function closePay(){ document.getElementById('payOverlay').classList.remove('show'); }
+function payDemo(){
+  closePay();
+  try{ localStorage.setItem('ksm_unlocked','1'); }catch(e){}
+  if(document.getElementById('report').style.display==='block') generate();
+  var pc=document.getElementById('premiumCard');
+  if(pc) setTimeout(function(){ pc.scrollIntoView({block:'start',behavior:'smooth'}); }, 150);
 }
 
 const EL_COLOR={wood:{en:"Green",es:"Verde"},fire:{en:"Red",es:"Rojo"},earth:{en:"Yellow / earth tones",es:"Amarillo / tonos tierra"},metal:{en:"White / gold",es:"Blanco / dorado"},water:{en:"Blue / black",es:"Azul / negro"}};
