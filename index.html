@@ -114,6 +114,16 @@
   .lucktable{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
   .lucktable>div{background:var(--soft);border-radius:10px;padding:9px 12px;font-size:13px;display:flex;justify-content:space-between;gap:8px}
   .lucktable span{color:var(--muted)}
+  .moList,.lsList{display:flex;flex-direction:column;gap:8px;margin-top:11px;max-width:660px}
+  .moRow,.lsRow{border:1px solid var(--line);border-radius:11px;padding:10px 13px;background:var(--soft)}
+  .moHead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .moName,.lsHead{font-weight:800;font-size:14px;color:var(--ink)}
+  .lsHead .psmall{display:inline;margin:0}
+  .moTag{font-size:11.5px;font-weight:800;white-space:nowrap}
+  .moTxt,.lsTxt{font-size:13.5px;margin:6px 0 0}
+  .moTag.good{color:#2e7d44}.moTag.ok{color:#9a6b00}.moTag.watch{color:#c0492b}
+  body.dark .moTag.good{color:#6ee7a0}body.dark .moTag.ok{color:#f0c674}body.dark .moTag.watch{color:#ff9d7a}
+  body.dark .moName,body.dark .lsHead{color:var(--ink)}
   .unlocked-badge{display:inline-block;font-size:11px;font-weight:700;color:#2e7d44;background:rgba(52,168,83,.12);padding:3px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
 
   /* archetype (sajufy-style memorable name) */
@@ -345,23 +355,15 @@
       </div>
       <div class="section">
         <h3>💞 <span data-i="r_love">Love & Marriage</span></h3>
-        <p id="loveText"></p>
+        <div id="loveText"></div>
       </div>
       <div class="section">
         <h3>💰 <span data-i="r_money">Money & Work</span></h3>
-        <p id="moneyText"></p>
+        <div id="moneyText"></div>
       </div>
       <div class="section">
         <h3>🌟 <span data-i="r_career">Strengths & Direction</span></h3>
         <p id="careerText"></p>
-      </div>
-      <div class="section">
-        <h3>🌿 <span data-i="r_health">Health & Body</span></h3>
-        <div id="healthText"></div>
-      </div>
-      <div class="section">
-        <h3>🍀 <span data-i="r_luck">Your Lucky Keys</span></h3>
-        <div id="luckText"></div>
       </div>
     </div>
 
@@ -532,6 +534,9 @@ const I18N = {
   p_wealth:{en:"Money windows",es:"Ventanas de dinero"},
   p_wealthEl:{en:"Your wealth element",es:"Tu elemento de riqueza"},
   p_luck:{en:"Your lucky keys",es:"Tus claves de la suerte"},
+  p_monthly:{en:"Month-by-month 2026",es:"Mes a mes 2026"},
+  p_life:{en:"Your life stages (초년·중년·장년)",es:"Tus etapas de vida (초년·중년·장년)"},
+  p_health:{en:"Health & Body",es:"Salud y Cuerpo"},
   p_color:{en:"Color",es:"Color"},
   p_dir:{en:"Direction",es:"Dirección"},
   p_day:{en:"Day",es:"Día"},
@@ -948,13 +953,18 @@ function premiumHTML(d){
   };
   const starTips = stars.map(s=>starTipMap[s]);
   const starsBody = stars.length ? stars.map(s=>`<p><b>${SAL[s].name[L]}</b> — ${SAL[s].text[L]}</p>`).join('') : `<p>${T('p_starsNone')}</p>`;
+  const hb=healthBlockBT(d), lb=luckBlockBT(d);
   return ''
    + pblk('🧭', T('p_power'), leadP(SHIN[isStrong?'strong':'weak'][L].replace(/\{el\}/g,'<b>'+elName+'</b>').replace('{fav}','<b>'+favStr+'</b>')), powerTips)
    + pblk('☯', T('p_forces'), `<p class="plead">${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</p><p>${FORCE[topForce].strong[L]}</p><p class="psmall">${en?'Faintest in your chart':'Lo más tenue en tu carta'}: <b>${FORCE[lowForce].name[L]} (${FORCE_SHORT[lowForce]})</b> — ${FORCE[lowForce].low[L]}</p><div class="pchips">${forceChips}</div>`, forcesTips)
    + pblk('📅', T('p_2026'), leadP(P.y2026[L]) + `<div class="pchips"><span class="pchip good">${T('p_best')}: ${P.bestM[L]}</span><span class="pchip warn">${T('p_caution')}: ${P.cautM[L]}</span></div>`, PREMIUM_TIPS[d.el].y2026[L])
+   + pblk('📆', T('p_monthly'), monthlyFortune(d))
+   + pblk('⏳', T('p_life'), lifeStageHTML(d))
    + pblk('💞', T('p_love'), leadP(P.love[L]) + `<p>${SPOUSE[d.dayBranchEl][L]}</p><p class="pmatch">✅ ${T('p_match')}: <b>${goodNames}</b> &nbsp;·&nbsp; ❌ ${T('p_clash')}: <b>${badName}</b></p>`, PREMIUM_TIPS[d.el].love[L])
    + pblk('💰', T('p_wealth'), leadP(P.wealth[L]) + `<p class="psmall">${T('p_wealthEl')}: <b>${EL_NAME[wealthEl][L]}</b></p>`, PREMIUM_TIPS[d.el].wealth[L])
    + pblk('💼', T('p_career'), `<p class="plead">${careerLead}</p><p>${careerBody}</p>`, careerTips)
+   + pblk('🌿', T('p_health'), hb.body, hb.tips)
+   + pblk('🍀', T('p_luck'), lb.body, lb.tips)
    + pblk('⭐', T('p_stars'), starsBody, starTips)
    + pblk('🧘', T('p_plan'), leadP(P.mental[L]), PREMIUM_TIPS[d.el].mental[L]);
 }
@@ -966,9 +976,13 @@ function premiumTeaserHTML(d){
     {ic:'🧭',t:T('p_power'),p:L==='en'?'Is your day-master strong or weak, and which elements empower you…':'¿Tu maestro del día es fuerte o débil, y qué elementos te potencian…'},
     {ic:'☯',t:T('p_forces'),p:L==='en'?'Wealth, power, expression, support, self — which Ten-God forces run your life…':'Riqueza, poder, expresión, apoyo, yo — qué fuerzas (Diez Dioses) rigen tu vida…'},
     {ic:'📅',t:T('p_2026'),p:P.y2026[L]},
+    {ic:'📆',t:T('p_monthly'),p:L==='en'?'A month-by-month breakdown of all 12 months of 2026 — when to push, earn and rest…':'Un desglose mes a mes de los 12 meses de 2026 — cuándo empujar, ganar y descansar…'},
+    {ic:'⏳',t:T('p_life'),p:L==='en'?'Your early, middle and later-life chapters — the arc your four pillars map out…':'Tus capítulos de juventud, madurez y vejez — el arco que trazan tus cuatro pilares…'},
     {ic:'💞',t:T('p_love'),p:P.love[L]},
     {ic:'💰',t:T('p_wealth'),p:P.wealth[L]},
     {ic:'💼',t:T('p_career'),p:L==='en'?'The fields and roles your chart is actually built for…':'Los campos y roles para los que tu carta está hecha…'},
+    {ic:'🌿',t:T('p_health'),p:L==='en'?'Your strong and weak body systems by element, and how to care for them…':'Tus sistemas corporales fuertes y débiles por elemento, y cómo cuidarlos…'},
+    {ic:'🍀',t:T('p_luck'),p:L==='en'?'Your lucky colour, direction, day and numbers — your personal keys…':'Tu color, dirección, día y números de la suerte — tus claves personales…'},
     {ic:'⭐',t:T('p_stars'),p:L==='en'?'Peach Blossom, Traveling Horse, Noble Helper — your special stars…':'Flor de Durazno, Caballo Viajero, Noble Protector — tus estrellas especiales…'},
     {ic:'🧘',t:T('p_plan'),p:P.mental[L]}
   ];
@@ -1129,6 +1143,120 @@ const EL_MONEY={
  metal:{en:"You handle money with discipline and clear judgment — budgets, structure and quality purchases. Finance, analysis and craftsmanship reward you. Let yourself enjoy some of it too, not only optimize.",es:"Manejas el dinero con disciplina y criterio claro: presupuestos, estructura y compras de calidad. Las finanzas, el análisis y el buen oficio te recompensan. Permítete disfrutarlo también, no solo optimizar."},
  water:{en:"You make money through adaptability, timing and reading trends — flexible, varied income suits you. Because cash flows in and out easily, build one fixed savings habit you never touch.",es:"Ganas por adaptabilidad, oportunidad y lectura de tendencias: te van los ingresos flexibles y variados. Como el dinero entra y sale con facilidad, crea un hábito de ahorro fijo que nunca toques."}
 };
+/* ===== FREE deep Love & Marriage (expanded) ===== */
+const LOVE_DEEP={
+ wood:{lead:{en:"In love you give direction and grow alongside your partner — you commit to a shared future and naturally take the lead in building it. You're the loyal, steady type who plans ahead, talks about the years to come, and quietly tends the relationship like something worth cultivating.",es:"En el amor das dirección y creces junto a tu pareja: te comprometes con un futuro compartido y tomas la iniciativa para construirlo. Eres del tipo leal y constante que planea, habla de los años por venir y cuida la relación como algo que vale la pena cultivar."},
+  body:{en:"Your shadow side is treating your partner as a project to improve — you see their potential so clearly that you forget to let them simply be loved as they are. In marriage you do best with a calm, secure partner who admires your drive instead of competing with it, and who can gently remind you to stop managing and just enjoy. Give the relationship room to breathe: not every difference is a problem to fix, and intimacy grows as much from acceptance as from effort.",es:"Tu lado sombra es tratar a la pareja como un proyecto a mejorar: ves su potencial con tanta claridad que olvidas dejar que simplemente sea amada tal como es. En el matrimonio te va mejor con alguien tranquilo y seguro que admire tu impulso en vez de competir contigo, y que sepa recordarte con cariño que dejes de gestionar y solo disfrutes. Dale aire a la relación: no toda diferencia es un problema que resolver, y la intimidad crece tanto desde la aceptación como desde el esfuerzo."},
+  tips:{en:["Praise who your partner already is, not only who they could become.","Plan pure fun with zero agenda — connection, not improvement.","Say your own needs out loud instead of only steering the relationship.","Choose someone who feels like a teammate, never a project."],es:["Elogia quién es tu pareja ya, no solo quién podría llegar a ser.","Planea diversión pura sin agenda: conexión, no mejora.","Di tus propias necesidades en voz alta en vez de solo dirigir la relación.","Elige a alguien que se sienta tu compañero de equipo, nunca un proyecto."]}},
+ fire:{lead:{en:"You love passionately and out loud — warmth, affection, fun and chemistry matter deeply to you, and when you fall, you fall brightly. You bring excitement and spark into a relationship, and your partner feels truly seen and celebrated when you're at your best.",es:"Amas con pasión y a viva voz: la calidez, el cariño, la diversión y la química te importan de verdad, y cuando te enamoras, lo haces con intensidad. Llevas emoción y chispa a la relación, y tu pareja se siente vista y celebrada cuando estás en tu mejor momento."},
+  body:{en:"The risk written into Fire is burning hot and then cooling fast — the early intensity can fade into restlessness once novelty runs out. For a marriage that lasts you need a partner who feels safe enough to keep the flame steady rather than dramatic, and rituals that renew the spark instead of chasing a brand-new one. Learn to value the quiet, warm kind of love too; depth, not just heat, is what makes it stay.",es:"El riesgo propio del Fuego es encenderte mucho y enfriarte rápido: la intensidad del inicio puede volverse inquietud cuando se acaba la novedad. Para un matrimonio que dure necesitas una pareja que te dé seguridad para mantener la llama estable en vez de dramática, y rituales que renueven la chispa en lugar de buscar una nueva. Aprende a valorar también el amor tranquilo y cálido: lo que lo hace quedarse es la profundidad, no solo el calor."},
+  tips:{en:["Build small rituals that renew the spark with the same person.","When boredom hits, add novelty together — don't read it as 'wrong partner'.","Cool your words in a fight; say the hard thing gently.","Pick someone who feels safe, not just someone who's exciting."],es:["Crea pequeños rituales que renueven la chispa con la misma persona.","Cuando llegue el aburrimiento, añadan novedad juntos: no lo leas como 'pareja equivocada'.","Enfría tus palabras en una pelea; di lo difícil con suavidad.","Elige a alguien que te dé seguridad, no solo a alguien emocionante."]}},
+ earth:{lead:{en:"You are the loyal, devoted partner who builds a real home — steady, warm and dependable, the person who shows love through care, presence and showing up every single day. Commitment comes naturally to you, and marriage genuinely suits your nature.",es:"Eres la pareja leal y entregada que construye un hogar de verdad: estable, cálida y confiable, la persona que ama a través del cuidado, la presencia y estar ahí cada día. El compromiso te sale natural, y el matrimonio encaja de verdad con tu manera de ser."},
+  body:{en:"Because you give so much, your blind spot is silent over-giving — quietly enduring, absorbing your partner's moods and assuming your own needs don't count. Resentment builds when love only flows one way. The healthiest love for you is reciprocal: a partner who actively cares back, and a habit of saying your needs out loud before you've run dry. You don't have to earn love by carrying everything; let yourself receive.",es:"Como das tanto, tu punto ciego es dar de más en silencio: aguantar callada, absorber los estados de ánimo de tu pareja y asumir que tus necesidades no cuentan. El resentimiento crece cuando el amor fluye en una sola dirección. El amor más sano para ti es recíproco: una pareja que también te cuide de forma activa, y el hábito de decir tus necesidades en voz alta antes de quedarte vacía. No tienes que ganarte el amor cargando con todo; permítete recibir."},
+  tips:{en:["Name one need out loud each week before resentment builds.","Let your partner give to you — receiving is part of love.","Watch for silent endurance; speak up early, not after you snap.","Choose someone who notices and returns your care."],es:["Di una necesidad en voz alta cada semana antes de que crezca el resentimiento.","Deja que tu pareja te dé: recibir también es amar.","Cuidado con aguantar en silencio; habla pronto, no después de estallar.","Elige a alguien que note y devuelva tu cuidado."]}},
+ metal:{lead:{en:"You love with loyalty, honesty and high standards — once you commit, you're devoted for the long run, and you offer your partner clarity, integrity and a steady spine. You don't play games; people always know where they stand with you.",es:"Amas con lealtad, honestidad y altos estándares: cuando te comprometes, eres fiel a largo plazo, y le ofreces a tu pareja claridad, integridad y firmeza. No juegas a las indirectas; la gente siempre sabe a qué atenerse contigo."},
+  body:{en:"The catch is that the same sharpness can read as cool, critical or hard to please — you may correct when your partner needs comforting, or hold them (and yourself) to a standard that leaves little room for being human. Warmth, not correctness, is what keeps love alive. Soften your delivery, lead with affection before feedback, and let small imperfections slide; the relationship is meant to be a refuge, not an audit.",es:"El detalle es que esa misma agudeza puede parecer fría, crítica o difícil de complacer: a veces corriges cuando tu pareja necesita consuelo, o le exiges (y te exiges) un estándar que deja poco espacio para ser humano. Lo que mantiene vivo el amor es la calidez, no tener la razón. Suaviza el tono, pon el cariño antes que la crítica y deja pasar las pequeñas imperfecciones; la relación es un refugio, no una auditoría."},
+  tips:{en:["Lead with warmth before any feedback or correction.","Let small flaws go — not everything needs fixing.","Say appreciation out loud; your partner can't read your loyalty.","Choose someone whose values you respect, then relax your grip."],es:["Pon la calidez por delante de cualquier crítica o corrección.","Deja pasar los defectos pequeños: no todo necesita arreglo.","Di tu aprecio en voz alta; tu pareja no puede adivinar tu lealtad.","Elige a alguien cuyos valores respetes, y luego suelta el control."]}},
+ water:{lead:{en:"You are emotionally intuitive and adaptable in love — you sense what your partner feels before they say it, and you offer a soft, deep, accepting kind of intimacy that few people give. You flow toward your partner and create real closeness.",es:"Eres intuitiva y adaptable en el amor: percibes lo que siente tu pareja antes de que lo diga, y ofreces una intimidad suave, profunda y acogedora que pocos dan. Fluyes hacia tu pareja y creas una cercanía real."},
+  body:{en:"Your risk is dissolving — flowing so completely into the other person that you lose your own shape, your friends, your edges and your needs. Love built on merging eventually feels like drowning for both of you. The lasting version keeps a current of its own: your own life, your own center, and honest words for what you actually want instead of quietly adapting. A partner who values emotional depth and real conversation will meet you where you are.",es:"Tu riesgo es disolverte: fluir tan por completo en el otro que pierdes tu forma, tus amistades, tus límites y tus necesidades. El amor basado en fundirse termina sintiéndose como ahogarse para ambos. La versión que dura conserva una corriente propia: tu propia vida, tu centro y palabras honestas sobre lo que de verdad quieres en vez de adaptarte en silencio. Una pareja que valore la profundidad emocional y la conversación real te encontrará donde estás."},
+  tips:{en:["Keep your own friends, hobbies and space inside the relationship.","Say what you want directly instead of only adapting to them.","Notice when you're merging; come back to your own center.","Choose someone who values depth and honest talks."],es:["Conserva tus amistades, aficiones y espacio dentro de la relación.","Di lo que quieres directamente en vez de solo adaptarte.","Nota cuándo te estás fundiendo; vuelve a tu propio centro.","Elige a alguien que valore la profundidad y las conversaciones sinceras."]}}
+};
+/* ===== FREE deep Money & Work (expanded) ===== */
+const MONEY_DEEP={
+ wood:{lead:{en:"You earn by building things over time — careers, projects and businesses with a long arc, grown patiently like a tree rather than chased in quick wins. You're at your best with a plan, a direction and something you can develop year over year.",es:"Ganas construyendo a lo largo del tiempo: carreras, proyectos y negocios con recorrido, cultivados con paciencia como un árbol en vez de perseguidos en golpes rápidos. Rindes mejor con un plan, una dirección y algo que puedas hacer crecer año tras año."},
+  body:{en:"Steady, compounding investing suits you far better than speculation, and your discipline pays off in the long run. The trap is overextending — starting too many plans at once, or spreading yourself across projects until none gets the focus it needs. Money grows for you when you prune: commit to a few things, see them through, and reinvest. Build one main trunk before you grow new branches.",es:"La inversión constante que se acumula te va mucho mejor que la especulación, y tu disciplina rinde a largo plazo. La trampa es dispersarte: empezar demasiados planes a la vez o repartirte entre proyectos hasta que ninguno recibe el foco que necesita. El dinero crece cuando podas: comprométete con pocas cosas, llévalas hasta el final y reinvierte. Construye un tronco principal antes de sacar ramas nuevas."},
+  tips:{en:["Finish what you start before launching the next thing.","Automate steady investing — let time and compounding work.","Pick one main income trunk; prune side projects that drain focus.","Think in years, not weeks — that's where your edge is."],es:["Termina lo que empiezas antes de lanzar lo siguiente.","Automatiza la inversión constante: deja que el tiempo y el interés compuesto trabajen.","Elige un tronco principal de ingresos; poda los proyectos que dispersan.","Piensa en años, no en semanas: ahí está tu ventaja."]}},
+ fire:{lead:{en:"Money comes to you through visibility, ideas and people — sales, content, performance, anything where your energy and charisma shine. You can create opportunity out of attention, and income often arrives in bright bursts when you're seen.",es:"El dinero te llega por visibilidad, ideas y gente: ventas, contenido, escenario, todo donde brillan tu energía y carisma. Puedes crear oportunidad a partir de la atención, y los ingresos suelen llegar en ráfagas cuando te ven."},
+  body:{en:"The weakness is impulse: when you're excited, money flows out as fast as it came in, and 'fun spending' has no natural brake. Build the structure your temperament lacks — automate savings the day you're paid, keep a separate account for taxes and slow money, and let only a capped amount be playful. Your earning ceiling is high; your job is to keep more of what you make instead of letting it evaporate.",es:"La debilidad es el impulso: cuando te emocionas, el dinero sale tan rápido como entró, y el 'gasto divertido' no tiene freno natural. Crea la estructura que tu temperamento no trae: automatiza el ahorro el día que cobras, ten una cuenta aparte para impuestos y dinero lento, y deja que solo una cantidad con tope sea para disfrutar. Tu techo de ingresos es alto; tu tarea es quedarte con más de lo que generas en vez de dejar que se evapore."},
+  tips:{en:["Automate savings the day income lands, before you can spend it.","Cap a monthly 'fun money' amount and keep the rest untouchable.","Turn visibility into income — content, sales, your personal brand.","Keep a tax/slow-money account separate from daily cash."],es:["Automatiza el ahorro el día que entra el dinero, antes de poder gastarlo.","Pon un tope mensual de 'dinero para disfrutar' y deja el resto intocable.","Convierte tu visibilidad en ingresos: contenido, ventas, tu marca personal.","Ten una cuenta de impuestos/dinero lento separada del gasto diario."]}},
+ earth:{lead:{en:"You are a natural saver and accumulator — stability, property and tangible assets suit you, and your steady hand builds wealth slowly, safely and reliably. You rarely lose money to recklessness, and people trust you with theirs.",es:"Eres ahorradora y acumuladora por naturaleza: la estabilidad, los bienes y los activos tangibles te van bien, y tu mano firme construye riqueza despacio, con seguridad y de forma fiable. Rara vez pierdes dinero por imprudencia, y la gente te confía el suyo."},
+  body:{en:"Your blind spot is the opposite of the gambler's: being so cautious that you sit out good, well-researched opportunities and let inflation quietly erode idle savings. Security is your strength, but growth needs a measured amount of risk. Once you've done your homework, give yourself permission to act — and to enjoy some of what you've built, instead of only guarding it.",es:"Tu punto ciego es el opuesto al del apostador: ser tan cauta que dejas pasar buenas oportunidades bien estudiadas y permites que la inflación erosione en silencio el ahorro parado. La seguridad es tu fuerza, pero el crecimiento necesita una dosis medida de riesgo. Cuando ya hiciste la tarea, date permiso de actuar, y de disfrutar algo de lo que construiste en vez de solo cuidarlo."},
+  tips:{en:["Once you've researched it, let yourself act — don't sit out forever.","Put idle cash to work; safe-but-stagnant loses to inflation.","Allow some enjoyment spending; you've earned it.","Lean into property and tangible, steady assets — your strength."],es:["Cuando ya lo investigaste, permítete actuar: no te quedes fuera para siempre.","Pon a trabajar el dinero parado; lo seguro pero estancado pierde con la inflación.","Permítete algo de gasto para disfrutar; te lo ganaste.","Apuesta por bienes raíces y activos tangibles y estables: tu fortaleza."]}},
+ metal:{lead:{en:"You handle money with discipline and clear judgment — budgets, structure, quality over quantity, and a sharp sense of what's actually worth paying for. Finance, analysis, law and craftsmanship reward your precision, and you rarely make careless decisions.",es:"Manejas el dinero con disciplina y criterio claro: presupuestos, estructura, calidad sobre cantidad y un olfato fino para lo que de verdad vale la pena pagar. Las finanzas, el análisis, el derecho y el buen oficio recompensan tu precisión, y rara vez tomas decisiones descuidadas."},
+  body:{en:"The risk is over-optimizing — treating money as a scoreboard, gripping control so tightly that you never let yourself enjoy what you've earned, or judging others for spending differently. Wealth is a tool for a life, not the point of it. Keep your discipline (it's a genuine edge), but budget in room for generosity and pleasure too, so your financial life feels rich and not just efficient.",es:"El riesgo es optimizar de más: tratar el dinero como un marcador, aferrarte tanto al control que nunca te permites disfrutar lo que ganaste, o juzgar a otros por gastar distinto. La riqueza es una herramienta para una vida, no el sentido de ella. Conserva tu disciplina (es una ventaja real), pero presupuesta también espacio para la generosidad y el placer, para que tu vida financiera se sienta rica y no solo eficiente."},
+  tips:{en:["Budget a guilt-free amount for pleasure and generosity.","Use your analysis edge — finance, quality, long-term value.","Don't judge your worth (or others') by the balance sheet.","Loosen control a little; money is a tool, not the scoreboard."],es:["Presupuesta una cantidad sin culpa para el placer y la generosidad.","Usa tu ventaja analítica: finanzas, calidad, valor a largo plazo.","No midas tu valor (ni el de otros) por el estado de cuenta.","Suelta un poco el control; el dinero es herramienta, no el marcador."]}},
+ water:{lead:{en:"You make money through adaptability, timing and reading trends — flexible, varied income suits you far better than one rigid salary, and you sense shifts and openings before others do. Several streams you can adjust as the current changes is your natural mode.",es:"Ganas por adaptabilidad, oportunidad y lectura de tendencias: los ingresos flexibles y variados te van mucho mejor que un sueldo rígido, y percibes los cambios y las aperturas antes que los demás. Varias fuentes que puedas ajustar según cambie la corriente son tu modo natural."},
+  body:{en:"The structural weakness is that cash flows through you like water through an open hand — it comes and goes so easily that little stays unless you build a dam. Lock exactly one fixed savings habit you never touch: an automatic transfer the day income lands, into an account that's annoying to reach. Let the rest stay fluid and opportunistic, but make that one channel solid, and your adaptability becomes wealth instead of just movement.",es:"La debilidad estructural es que el dinero fluye por ti como agua entre los dedos: entra y sale tan fácil que poco se queda a menos que construyas una presa. Fija exactamente un hábito de ahorro que nunca toques: una transferencia automática el día que llega el ingreso, a una cuenta incómoda de alcanzar. Deja el resto fluido y oportunista, pero haz sólido ese canal, y tu adaptabilidad se vuelve riqueza en vez de solo movimiento."},
+  tips:{en:["Automate one untouchable savings transfer the day you're paid.","Keep several flexible income streams — that's your strength.","Watch money that 'flows out easily'; give it a dam.","Trust your timing sense, but lock in gains before they drift away."],es:["Automatiza una transferencia de ahorro intocable el día que cobras.","Mantén varias fuentes de ingreso flexibles: es tu fortaleza.","Cuidado con el dinero que 'se va fácil'; ponle una presa.","Confía en tu sentido del momento, pero asegura las ganancias antes de que se escapen."]}}
+};
+function loveDeepHTML(el){ var d=LOVE_DEEP[el], L=LANG; return `<p class="plead">${d.lead[L]}</p><p>${d.body[L]}</p>`+ptips(d.tips[L]); }
+function moneyDeepHTML(el){ var d=MONEY_DEEP[el], L=LANG; return `<p class="plead">${d.lead[L]}</p><p>${d.body[L]}</p>`+ptips(d.tips[L]); }
+/* ===== PAID: month-by-month 2026 (월별 운세) ===== */
+const MONTHS_2026=[
+ {m:{en:"January",es:"Enero"},el:'earth'},{m:{en:"February",es:"Febrero"},el:'wood'},
+ {m:{en:"March",es:"Marzo"},el:'wood'},{m:{en:"April",es:"Abril"},el:'earth'},
+ {m:{en:"May",es:"Mayo"},el:'fire'},{m:{en:"June",es:"Junio"},el:'fire'},
+ {m:{en:"July",es:"Julio"},el:'earth'},{m:{en:"August",es:"Agosto"},el:'metal'},
+ {m:{en:"September",es:"Septiembre"},el:'metal'},{m:{en:"October",es:"Octubre"},el:'earth'},
+ {m:{en:"November",es:"Noviembre"},el:'water'},{m:{en:"December",es:"Diciembre"},el:'water'}
+];
+const MONTH_THEME={
+ self:{label:{en:"Self & energy",es:"Yo y energía"},rate:'ok',txt:{en:"Your own element is active, so confidence, drive and independence run high — a strong month to start things, assert yourself and push your own plans forward. Just keep an eye on stubbornness and don't steamroll the people around you.",es:"Tu propio elemento está activo, así que la confianza, el empuje y la independencia están altos: un mes fuerte para empezar cosas, hacerte valer y avanzar tus propios planes. Solo cuida la terquedad y no atropelles a quienes te rodean."}},
+ output:{label:{en:"Expression & joy",es:"Expresión y disfrute"},rate:'good',txt:{en:"A creative, expressive and social month — ideas flow, you shine in public and enjoyment comes easily. Great for content, performance, dating and showing your work; channel the energy on purpose or it scatters.",es:"Un mes creativo, expresivo y social: las ideas fluyen, brillas en público y el disfrute llega fácil. Ideal para contenido, escenario, citas y mostrar tu trabajo; canaliza la energía a propósito o se dispersa."}},
+ wealth:{label:{en:"Money & opportunity",es:"Dinero y oportunidad"},rate:'good',txt:{en:"Your wealth element is active, so income, deals and practical opportunities open up — a strong month to earn, negotiate, sell and invest. Watch impulse spending while money feels easy to come by.",es:"Tu elemento de riqueza está activo, así que se abren ingresos, acuerdos y oportunidades prácticas: un mes fuerte para ganar, negociar, vender e invertir. Cuidado con el gasto impulsivo mientras el dinero parece llegar fácil."}},
+ power:{label:{en:"Work & pressure",es:"Trabajo y presión"},rate:'watch',txt:{en:"A demanding, status-driven month — responsibility, work and authority figures take center stage. Good for career moves and discipline, but pressure runs high, so protect your health and don't overcommit.",es:"Un mes exigente y de estatus: la responsabilidad, el trabajo y las figuras de autoridad toman protagonismo. Bueno para movimientos de carrera y disciplina, pero la presión sube, así que cuida tu salud y no te sobrecargues."}},
+ support:{label:{en:"Rest & learning",es:"Descanso y aprendizaje"},rate:'ok',txt:{en:"A nourishing, inward month — study, rest, mentors and support matter most. Slow down, learn, lean on your allies and refill your tank; this isn't the month to force big external pushes.",es:"Un mes nutritivo y hacia adentro: el estudio, el descanso, los mentores y el apoyo son lo más importante. Baja el ritmo, aprende, apóyate en tus aliados y recarga; no es el mes para forzar grandes empujes externos."}}
+};
+function monthlyFortune(d){
+  var L=LANG, rateIcon={good:'🟢',ok:'🟡',watch:'🟠'};
+  var rows=MONTHS_2026.map(function(mo){
+    var th=MONTH_THEME[tenGod(d.el,mo.el)];
+    return `<div class="moRow"><div class="moHead"><span class="moName">${mo.m[L]}</span><span class="moTag ${th.rate}">${rateIcon[th.rate]} ${th.label[L]}</span></div><p class="moTxt">${th.txt[L]}</p></div>`;
+  }).join('');
+  var best=MONTHS_2026.filter(function(mo){var f=tenGod(d.el,mo.el);return f==='wealth'||f==='output';}).map(function(mo){return mo.m[L];});
+  var watch=MONTHS_2026.filter(function(mo){return tenGod(d.el,mo.el)==='power';}).map(function(mo){return mo.m[L];});
+  var lead=L==='en'
+    ? `Here is your month-by-month read for 2026. Each month carries a different energy depending on how its element meets your <b>${EL_NAME[d.el][L]}</b> day-master — so you know when to push and when to rest.`
+    : `Aquí tienes tu lectura mes a mes de 2026. Cada mes trae una energía distinta según cómo su elemento se encuentra con tu maestro del día <b>${EL_NAME[d.el][L]}</b> — así sabes cuándo empujar y cuándo descansar.`;
+  var summ=`<p class="psmall">${L==='en'?'🟢 Strongest months':'🟢 Meses más fuertes'}: <b>${best.join(', ')||'—'}</b> &nbsp;·&nbsp; ${L==='en'?'🟠 Take it easy':'🟠 Con calma'}: <b>${watch.join(', ')||'—'}</b></p>`;
+  return `<p class="plead">${lead}</p>`+summ+`<div class="moList">${rows}</div>`;
+}
+/* ===== PAID: life stages 초년·중년·장년 (근묘화실) ===== */
+const LIFE_THEME={
+ self:{en:"a strong sense of self and independence — standing on your own, making your own way, and learning to trust your own judgment. Self-driven effort defines it.",es:"un fuerte sentido del yo y la independencia: sostenerte sola, abrir tu propio camino y aprender a confiar en tu criterio. El esfuerzo propio lo define."},
+ output:{en:"creativity, expression and visible talent — putting yourself out there, creating, performing and being seen. Your gifts want an audience.",es:"la creatividad, la expresión y el talento visible: mostrarte, crear, actuar y ser vista. Tus dones quieren público."},
+ wealth:{en:"money, work and the material world — earning, building assets and chasing tangible results. Opportunities to grow wealth are strongest here.",es:"el dinero, el trabajo y el mundo material: ganar, construir bienes y buscar resultados tangibles. Las oportunidades de crecer en riqueza son más fuertes aquí."},
+ power:{en:"responsibility, status and structure — career, duty, leadership and proving yourself. Pressure is higher, but so is achievement and standing.",es:"la responsabilidad, el estatus y la estructura: carrera, deber, liderazgo y demostrar tu valía. La presión es mayor, pero también el logro y el reconocimiento."},
+ support:{en:"learning, support and inner growth — study, mentors, family and building wisdom. Help arrives, and you grow through knowledge more than hustle.",es:"el aprendizaje, el apoyo y el crecimiento interior: estudio, mentores, familia y sabiduría. Llega ayuda, y creces por el conocimiento más que por el ajetreo."}
+};
+function lifeStageHTML(d){
+  var L=LANG;
+  var stages=[
+   {label:{en:"Early years · youth → late 20s",es:"Primeros años · juventud → ~28"},el:d.yearEl},
+   {label:{en:"Midlife · ~30s–40s",es:"Mediana edad · ~30–40"},el:d.monthEl},
+   {label:{en:"Later years · ~50s onward",es:"Años maduros · ~50+"},el:(d.hourEl||d.dayBranchEl)}
+  ];
+  var lead=L==='en'
+    ? `Your chart maps onto life stages (근묘화실): each pillar colours a different chapter. Here is the broad arc your Saju suggests — a season to lean into, not a fixed fate.`
+    : `Tu carta se proyecta en etapas de vida (근묘화실): cada pilar colorea un capítulo distinto. Este es el arco general que sugiere tu Saju — una temporada para apoyarte, no un destino fijo.`;
+  var rows=stages.map(function(s){
+    var th=LIFE_THEME[tenGod(d.el,s.el)];
+    var body=L==='en'?`This chapter is shaped by ${th.en}`:`Este capítulo está marcado por ${th.es}`;
+    return `<div class="lsRow"><div class="lsHead">${s.label[L]} <span class="psmall">· ${EL_NAME[s.el][L]}</span></div><p class="lsTxt">${body}</p></div>`;
+  }).join('');
+  return `<p class="plead">${lead}</p><div class="lsList">${rows}</div>`;
+}
+/* ===== PAID: Health & Body + Lucky Keys blocks ===== */
+function healthBlockBT(d){
+  var L=LANG;
+  if(d.strong===d.weak) return {body:`<p>${T('h_balanced')}</p>`,tips:[]};
+  var s=EL_HEALTH[d.strong], w=EL_HEALTH[d.weak];
+  var body=`<p class="plead">${T('h_strongLead').replace('{el}','<b>'+EL_NAME[d.strong][L]+'</b>').replace('{org}',s.organ[L])}</p><p>${s.strong[L]}</p>`
+    +`<p class="psmall" style="margin-top:11px">${T('h_careLead').replace('{el}','<b>'+EL_NAME[d.weak][L]+'</b>').replace('{org}',w.organ[L])}</p><p>${w.weak[L]}</p>`;
+  var tips=L==='en'
+    ? [`Care for your weakest area (${w.organ[L]}) with rest and the right routine.`,`Bring in more ${EL_NAME[d.weak][L]} energy — its colour (${EL_COLOR[d.weak][L]}), foods and season.`,`Don't let your strong ${EL_NAME[d.strong][L]} run to excess; balance is the goal.`]
+    : [`Cuida tu zona más débil (${w.organ[L]}) con descanso y la rutina correcta.`,`Aporta más energía ${EL_NAME[d.weak][L]} — su color (${EL_COLOR[d.weak][L]}), comidas y estación.`,`No dejes que tu fuerte ${EL_NAME[d.strong][L]} se vaya al exceso; la meta es el equilibrio.`];
+  return {body:body, tips:tips};
+}
+function luckBlockBT(d){
+  var L=LANG, e=d.weak;
+  var lead=L==='en'?`Your luckiest element is <b>${EL_NAME[e][L]}</b> — leaning on it rebalances your chart. These are your keys:`:`Tu elemento más afortunado es <b>${EL_NAME[e][L]}</b> — apoyarte en él reequilibra tu carta. Estas son tus claves:`;
+  var body=`<p class="plead">${lead}</p>`+luckHTML(e);
+  var tips=L==='en'
+    ? [`Wear or decorate with ${EL_COLOR[e][L]} when you want a boost.`,`Face ${EL_DIR[e][L]} for important calls, study or decisions.`,`Use your numbers (${EL_NUM[e]}) and ${EL_DAYW[e][L]} for key plans.`]
+    : [`Usa o decora con ${EL_COLOR[e][L]} cuando quieras un empujón.`,`Orienta hacia el ${EL_DIR[e][L]} para llamadas, estudio o decisiones importantes.`,`Usa tus números (${EL_NUM[e]}) y el ${EL_DAYW[e][L]} para planes clave.`];
+  return {body:body, tips:tips};
+}
 // MBTI: nickname + one-liner + core tags
 const MBTI={
  INTJ:{nick:{en:"The Architect",es:"La Arquitecta"},line:{en:"strategic, independent and future-focused",es:"estratégica, independiente y enfocada en el futuro"}},
@@ -1239,17 +1367,15 @@ function generate(rerenderOnly){
     `<span class="tag">${mbti} · ${mb.nick[LANG]}</span><span class="tag">${EL_NAME[el][LANG]} ${saju.dayMaster.yy==='yang'?'⊕':'⊖'}</span><span class="tag">${saju.dayMaster.han} ${saju.dayMaster.ro}</span>`;
   document.getElementById('coreText').innerHTML = coreHTML({mbti:mbti, nick:mb.nick[LANG], el:el, dayHan:saju.dayMaster.han, dayRo:saju.dayMaster.ro, yy:saju.dayMaster.yy, tally:saju.tally, hasTime:hasTime});
 
-  document.getElementById('loveText').innerHTML = EL_LOVE[el][LANG];
-  document.getElementById('moneyText').innerHTML = EL_MONEY[el][LANG];
+  document.getElementById('loveText').innerHTML = loveDeepHTML(el);
+  document.getElementById('moneyText').innerHTML = moneyDeepHTML(el);
 
   // career
   document.getElementById('careerText').innerHTML = LANG==='en'
     ? `Your sweet spot is where <b>${mb.nick[LANG]}</b> strengths (${mb.line[LANG]}) meet your ${EL_NAME[el][LANG]} drive. Build toward roles and projects that use both — and protect your ${missing.length?EL_NAME[weak][LANG]:EL_NAME[weak][LANG]} side, which is where you tire fastest.`
     : `Tu punto ideal está donde las fortalezas de <b>${mb.nick[LANG]}</b> (${mb.line[LANG]}) se unen con tu impulso ${EL_NAME[el][LANG]}. Avanza hacia roles y proyectos que usen ambos, y cuida tu lado ${EL_NAME[weak][LANG]}, donde te agotas más rápido.`;
 
-  // health & lucky keys
-  document.getElementById('healthText').innerHTML = healthHTML(strong, weak, saju.tally[strong]===saju.tally[weak]);
-  document.getElementById('luckText').innerHTML = luckHTML(weak);
+  // (Health & Body and Lucky Keys moved into the paid Deep Reading section)
 
   // stress
   document.getElementById('stressSub').textContent = LANG==='en'
@@ -1276,7 +1402,7 @@ function generate(rerenderOnly){
   // premium "Deep Reading" — teaser→lock funnel (sajufy-style)
   const _ul=isUnlocked();
   const _bIdx=[saju.pillars.year.b, saju.pillars.month.b, saju.pillars.day.b].concat(saju.pillars.hour?[saju.pillars.hour.b]:[]).map(b=>BRANCHES.indexOf(b));
-  const _pd={el:el, weak:weak, tally:saju.tally, branchIdx:_bIdx, dayBranchIdx:BRANCHES.indexOf(saju.pillars.day.b), dayStemIdx:STEMS.indexOf(saju.pillars.day.s), dayBranchEl:saju.pillars.day.b.el};
+  const _pd={el:el, weak:weak, strong:strong, tally:saju.tally, branchIdx:_bIdx, dayBranchIdx:BRANCHES.indexOf(saju.pillars.day.b), dayStemIdx:STEMS.indexOf(saju.pillars.day.s), dayBranchEl:saju.pillars.day.b.el, yearEl:saju.pillars.year.b.el, monthEl:saju.pillars.month.b.el, hourEl:saju.pillars.hour?saju.pillars.hour.b.el:null};
   document.getElementById('premiumBody').innerHTML = _ul ? premiumHTML(_pd) : premiumTeaserHTML(_pd);
   document.getElementById('premiumCTA').style.display = _ul?'none':'block';
   document.getElementById('unlockedBadge').style.display = _ul?'inline-block':'none';
