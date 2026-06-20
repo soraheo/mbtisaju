@@ -123,6 +123,17 @@
   .cb{margin:0 0 13px}
   .cb-lead{color:var(--brand);font-weight:800;font-size:11.5px;letter-spacing:.5px;text-transform:uppercase}
   .corenote{font-size:13px;color:var(--muted);background:var(--soft);border-radius:10px;padding:10px 13px;margin:8px 0 0;line-height:1.55}
+  /* readability: comfortable line length + scannable structure */
+  .pblock p,.cb,.section p{max-width:660px;line-height:1.72}
+  .pblock{padding:16px 0}
+  .pblock h4{margin:0 0 10px;font-size:15.5px}
+  .plead{font-weight:800;font-size:15px;line-height:1.5;max-width:660px;margin:0 0 9px;color:var(--ink)}
+  .ptips{list-style:none;margin:11px 0 2px;padding:0;max-width:660px;display:flex;flex-direction:column;gap:8px}
+  .ptips li{position:relative;padding-left:21px;font-size:13.5px;color:var(--muted);line-height:1.55}
+  .ptips li::before{content:"→";position:absolute;left:0;top:0;color:var(--brand);font-weight:800}
+  .ptips li b{color:var(--ink)}
+  body.dark .plead{color:#f3f0ff}
+  body.dark .ptips li b{color:#ece8fb}
   /* teaser + locked rows (sajufy-style funnel) */
   .pteaser{background:var(--soft);border-radius:14px;padding:14px 16px;margin-bottom:14px}
   .pteaser-label{font-size:11px;letter-spacing:2px;font-weight:800;color:var(--brand);margin-bottom:6px}
@@ -141,7 +152,7 @@
   body.dark input,body.dark select{background:rgba(255,255,255,.05);color:var(--ink)}
   body.dark .langtoggle,body.dark .themetoggle,body.dark .explain,body.dark .quizcard,body.dark .mood button,body.dark .quizopts button{background:var(--card)}
   body.dark .btn.ghost{background:var(--card);color:var(--brand2)}
-  body.dark .section p,body.dark .pblock p,body.dark ul.tips li,body.dark .explainBody>p,body.dark .explainWhy,body.dark .pteaser p,body.dark .pmatch,body.dark #balanceText{color:#d3cdf0 !important}
+  body.dark .section p,body.dark .pblock p,body.dark .cb,body.dark ul.tips li,body.dark .explainBody>p,body.dark .explainWhy,body.dark .pteaser p,body.dark .pmatch,body.dark #balanceText{color:#ded9f5 !important}
   body.dark .explainWhy{background:linear-gradient(135deg,rgba(155,140,255,.12),rgba(255,122,89,.10))}
   body.dark #moodResult{background:linear-gradient(135deg,rgba(155,140,255,.14),rgba(255,122,89,.12))}
   body.dark .pchip.good{background:rgba(52,168,83,.22)}
@@ -805,6 +816,33 @@ const PREMIUM={
   wealth:{en:"This is your strongest wealth year of the cycle — Fire opportunities are everywhere. Flexible, varied income suits you. Because cash flows in and out easily, lock one fixed savings habit you never touch.",es:"Es tu año de mayor riqueza del ciclo: las oportunidades de Fuego están por todas partes. Te van los ingresos flexibles y variados. Como el dinero entra y sale con facilidad, fija un hábito de ahorro que nunca toques."},
   mental:{en:"7-day reset: keep a steady sleep + warmth routine; cut late-night scrolling that feeds anxious thoughts; talk one worry out loud each day. Water floods under stress — it needs to flow and be warmed, not pool inside.",es:"Reinicio de 7 días: mantén una rutina estable de sueño y calor; corta el móvil de madrugada que alimenta la ansiedad; habla una preocupación en voz alta cada día. El Agua se desborda bajo estrés: necesita fluir y calentarse, no estancarse."}}
 };
+const PREMIUM_TIPS={
+ wood:{
+  y2026:{en:["Ship one <b>visible</b> thing this year — publish, present, launch.","Channel restlessness into building, not arguing.","Pace the momentum so you don't burn out by autumn."],es:["Saca algo <b>visible</b> este año — publica, presenta, lanza.","Canaliza la inquietud en construir, no en discutir.","Dosifica el impulso para no quemarte en otoño."]},
+  love:{en:["Spring–early summer: your best time to meet or deepen.","Let your partner be as they are — drop the urge to 'improve' them.","Pick someone steady who roots your big plans."],es:["Primavera–inicio de verano: tu mejor momento para conocer o profundizar.","Deja a tu pareja ser como es — suelta el afán de 'mejorarla'.","Elige a alguien estable que dé raíz a tus planes."]},
+  wealth:{en:["Turn visibility into income — content, services, a side build.","Reinvest steadily; don't scatter across too many plans.","Money grows on a long arc, not quick wins."],es:["Convierte tu visibilidad en ingresos — contenido, servicios, un proyecto.","Reinvierte con constancia; no te disperses en mil planes.","El dinero crece a largo plazo, no en golpes rápidos."]},
+  mental:{en:["Daily: a few minutes near greenery, or a walk.","Finish one concrete task before noon.","Each week, let one plan go on purpose."],es:["A diario: unos minutos cerca de lo verde, o una caminata.","Termina una tarea concreta antes del mediodía.","Cada semana, suelta un plan a propósito."]}},
+ fire:{
+  y2026:{en:["Pick where to shine — you can't light every room.","Channel charisma into one or two real goals.","Watch ego clashes; choose collaboration over competition."],es:["Elige dónde brillar — no puedes iluminar cada sala.","Canaliza el carisma en una o dos metas reales.","Cuidado con los choques de ego; colabora más que competir."]},
+  love:{en:["Summer is your hottest window for romance.","Choose depth over sparks — someone safe enough to last.","Don't flare and fade; let the fire settle into warmth."],es:["El verano es tu mejor momento para el amor.","Elige profundidad sobre chispas — alguien que dé seguridad.","No te enciendas y apagues; deja que el fuego se vuelva calidez."]},
+  wealth:{en:["Income follows visibility — sales, content, social.","Automate savings before the impulse spending hits.","Give the 'fun money' a fixed ceiling."],es:["El ingreso sigue tu visibilidad — ventas, contenido, lo social.","Automatiza el ahorro antes del gasto impulsivo.","Pon un techo fijo al 'dinero divertido'."]},
+  mental:{en:["Protect one screen-free hour before bed.","Say no to one social plan this week.","Long, slow exhales (in 4, out 8) when wired."],es:["Protege una hora sin pantallas antes de dormir.","Di que no a un plan social esta semana.","Exhalaciones largas (inhala 4, exhala 8) cuando estés acelerada."]}},
+ earth:{
+  y2026:{en:["Say yes to mentors and the help offered.","Good year to study, settle a home, or buy property.","Consolidate what you've built; don't carry it all alone."],es:["Di que sí a mentores y a la ayuda ofrecida.","Buen año para estudiar, asentar un hogar o comprar.","Consolida lo construido; no cargues todo sola."]},
+  love:{en:["Summer is your warmest window.","Say your needs out loud — stop quietly enduring.","Pick someone who gives back, not only takes."],es:["El verano es tu mejor momento.","Di tus necesidades en voz alta — deja de aguantar en silencio.","Elige a alguien que dé, no solo que reciba."]},
+  wealth:{en:["Build reserves or buy something lasting this year.","Your steady saving is a real superpower.","Don't be so cautious you miss a researched opportunity."],es:["Crea reservas o compra algo duradero este año.","Tu ahorro constante es un superpoder real.","No seas tan cauta que dejes pasar una oportunidad estudiada."]},
+  mental:{en:["Write worries down nightly to empty your head.","Eat warm, regular meals.","Set one boundary this week and keep it."],es:["Anota tus preocupaciones cada noche para vaciar la cabeza.","Come comidas cálidas y regulares.","Pon un límite esta semana y mantenlo."]}},
+ metal:{
+  y2026:{en:["Responsibility rises — let some standards be 'good enough'.","Channel pressure into structure, not self-criticism.","Don't carry the whole weight alone."],es:["Sube la responsabilidad — deja que algunos estándares sean 'suficientes'.","Canaliza la presión en estructura, no en autocrítica.","No cargues todo el peso sola."]},
+  love:{en:["Autumn is your best window.","Soften your words — warmth over correctness.","Let your loyalty show, not just be felt."],es:["El otoño es tu mejor momento.","Suaviza tus palabras — calidez sobre tener razón.","Muestra tu lealtad, no solo la sientas."]},
+  wealth:{en:["Structure it — budgets, quality over quantity.","Bigger responsibility can mean bigger reward this year.","Let yourself enjoy some of it, not only optimize."],es:["Estructúralo — presupuestos, calidad sobre cantidad.","Más responsabilidad puede traer más recompensa este año.","Permítete disfrutar algo, no solo optimizar."]},
+  mental:{en:["Lower one standard to 'good enough' each day.","Deep belly-breathing to open tight lungs.","Declutter one small space — outer order calms inner."],es:["Baja un estándar a 'suficiente' cada día.","Respira hondo con el vientre para abrir los pulmones.","Ordena un espacio pequeño — el orden afuera calma el de adentro."]}},
+ water:{
+  y2026:{en:["Your money-and-opportunity year — ride the openings.","Spend wisely; what flows in can flow out fast.","Relationships and finances move quickly — stay centered."],es:["Tu año de dinero y oportunidades — aprovecha las aperturas.","Gasta con cabeza; lo que entra puede salir rápido.","Relaciones y finanzas se mueven rápido — mantén tu centro."]},
+  love:{en:["Winter is your best window.","Keep your own center — don't dissolve into the other.","Pick a partner who values honest depth."],es:["El invierno es tu mejor momento.","Conserva tu centro — no te disuelvas en el otro.","Elige a alguien que valore la profundidad sincera."]},
+  wealth:{en:["Strongest wealth year of your cycle — act on it.","Lock one fixed savings habit you never touch.","Varied, flexible income suits you."],es:["Tu año de mayor riqueza del ciclo — actúa.","Fija un hábito de ahorro que nunca toques.","Te van los ingresos variados y flexibles."]},
+  mental:{en:["Keep a steady sleep + warmth routine.","Cut late-night scrolling that feeds anxiety.","Talk one worry out loud each day."],es:["Mantén una rutina estable de sueño y calor.","Corta el móvil de madrugada que alimenta la ansiedad.","Habla una preocupación en voz alta cada día."]}}
+};
 // ===== Saju depth: Ten Gods (십성), strength (신강/신약), special stars (신살) =====
 const GEN={wood:'fire',fire:'earth',earth:'metal',metal:'water',water:'wood'};       // D generates GEN[D]
 const CTRLm={wood:'earth',fire:'metal',earth:'water',metal:'wood',water:'fire'};     // D controls CTRLm[D]
@@ -869,11 +907,13 @@ function computeStars(branchIdx, dayBranchIdx, dayStemIdx){
   var nb=NOBLE[dayStemIdx]; if(nb && nb.some(b=>branchIdx.indexOf(b)>=0)) p.push('cheoneul');
   return p;
 }
+function leadP(s){ var i=s.indexOf('. '); return i<0?`<p>${s}</p>`:`<p class="plead">${s.slice(0,i+1)}</p><p>${s.slice(i+2)}</p>`; }
+function ptips(a){ return (a&&a.length)?`<ul class="ptips">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`:''; }
+function pblk(icon,title,body,tips){ return `<div class="pblock"><h4>${icon} ${title}</h4>${body}${ptips(tips)}</div>`; }
 function premiumHTML(d){
-  const P=PREMIUM[d.el], L=LANG, m=EL_MATCH[d.el], elName=EL_NAME[d.el][L];
-  const goodNames=m.good.map(e=>EL_NAME[e][L]).join(L==='en'?' & ':' y ');
+  const P=PREMIUM[d.el], L=LANG, en=(L==='en'), m=EL_MATCH[d.el], elName=EL_NAME[d.el][L];
+  const goodNames=m.good.map(e=>EL_NAME[e][L]).join(en?' & ':' y ');
   const badName=EL_NAME[m.bad][L], wealthEl=EL_WEALTH[d.el];
-  // Ten Gods forces from the element tally
   const ft={self:0,output:0,wealth:0,power:0,support:0};
   ['wood','fire','earth','metal','water'].forEach(e=>{ ft[tenGod(d.el,e)] += (d.tally[e]||0); });
   const total=Object.values(ft).reduce((a,b)=>a+b,0)||1;
@@ -884,26 +924,39 @@ function premiumHTML(d){
   const favStr = favEls.map(e=>EL_NAME[e][L]).join(', ');
   const forceChips = ordered.map(k=>`<span class="pchip ${k===topForce?'good':''}">${FORCE_SHORT[k]} ${ft[k]}</span>`).join('');
   const stars=computeStars(d.branchIdx, d.dayBranchIdx, d.dayStemIdx);
-  const starsHTML = stars.length ? stars.map(s=>`<p>${SAL[s].name[L]} — ${SAL[s].text[L]}</p>`).join('') : `<p>${T('p_starsNone')}</p>`;
-  const careerTxt = L==='en'
-    ? `With your strong <b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b>, you do well in ${CAREER_FORCE[topForce][L]}. Your ${elName} energy points toward ${CAREER_EL[d.el][L]}.`
-    : `Con tu fuerte <b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b>, te va bien en ${CAREER_FORCE[topForce][L]}. Tu energía ${elName} apunta hacia ${CAREER_EL[d.el][L]}.`;
-  return `
-   <div class="pblock"><h4>🧭 ${T('p_power')}</h4><p>${SHIN[isStrong?'strong':'weak'][L].replace(/\{el\}/g,elName).replace('{fav}',favStr)}</p></div>
-   <div class="pblock"><h4>☯ ${T('p_forces')}</h4>
-     <p><b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b> — ${FORCE[topForce].strong[L]}</p>
-     <p class="psmall">${L==='en'?'Faintest':'Lo más tenue'}: <b>${FORCE[lowForce].name[L]} (${FORCE_SHORT[lowForce]})</b> — ${FORCE[lowForce].low[L]}</p>
-     <div class="pchips">${forceChips}</div></div>
-   <div class="pblock"><h4>📅 ${T('p_2026')}</h4><p>${P.y2026[L]}</p>
-     <div class="pchips"><span class="pchip good">${T('p_best')}: ${P.bestM[L]}</span><span class="pchip warn">${T('p_caution')}: ${P.cautM[L]}</span></div></div>
-   <div class="pblock"><h4>💞 ${T('p_love')}</h4><p>${P.love[L]}</p>
-     <p>${SPOUSE[d.dayBranchEl][L]}</p>
-     <p class="pmatch">✅ ${T('p_match')}: <b>${goodNames}</b> &nbsp;·&nbsp; ❌ ${T('p_clash')}: <b>${badName}</b></p></div>
-   <div class="pblock"><h4>💰 ${T('p_wealth')}</h4><p>${P.wealth[L]}</p>
-     <p class="psmall">${T('p_wealthEl')}: <b>${EL_NAME[wealthEl][L]}</b></p></div>
-   <div class="pblock"><h4>💼 ${T('p_career')}</h4><p>${careerTxt}</p></div>
-   <div class="pblock"><h4>⭐ ${T('p_stars')}</h4>${starsHTML}</div>
-   <div class="pblock"><h4>🧘 ${T('p_plan')}</h4><p>${P.mental[L]}</p></div>`;
+  // POWER tips
+  const powerTips = isStrong
+    ? (en?[`Channel your energy <b>outward</b> — pour it into goals, work and people, not just yourself.`,`When you feel blocked, it's usually too much self-focus; deliberately invite others in.`,`Lean on <b>${favStr}</b> — their colours, seasons, foods and people keep you balanced.`]
+         :[`Canaliza tu energía <b>hacia afuera</b> — vuélcala en metas, trabajo y gente, no solo en ti.`,`Cuando te bloqueas, suele ser exceso de auto-enfoque; deja entrar a los demás a propósito.`,`Apóyate en <b>${favStr}</b> — sus colores, estaciones, comidas y personas te equilibran.`])
+    : (en?[`<b>Protect</b> your energy first — rest, say no, and don't carry everything alone.`,`Allies and mentors multiply you; build one real support circle.`,`Lean on <b>${favStr}</b> — their colours, seasons, foods and people refuel you.`]
+         :[`<b>Protege</b> tu energía primero — descansa, di que no y no cargues todo sola.`,`Aliados y mentores te multiplican; arma un círculo de apoyo real.`,`Apóyate en <b>${favStr}</b> — sus colores, estaciones, comidas y personas te recargan.`]);
+  const forcesTips = en
+    ? [`Use your strong <b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b> on purpose — it's your built-in advantage.`,`Grow your faintest force, <b>${FORCE[lowForce].name[L]} (${FORCE_SHORT[lowForce]})</b> — that's your real edge to develop.`]
+    : [`Usa a propósito tu fuerte <b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b> — es tu ventaja innata.`,`Desarrolla tu fuerza más tenue, <b>${FORCE[lowForce].name[L]} (${FORCE_SHORT[lowForce]})</b> — ahí está tu verdadero crecimiento.`];
+  const careerLead = en ? `Your chart is wired for <b>${FORCE_SHORT[topForce]}</b>-type work — play to it, not against it.` : `Tu carta está hecha para trabajo tipo <b>${FORCE_SHORT[topForce]}</b> — juega a favor, no en contra.`;
+  const careerBody = en
+    ? `With your strong <b>${FORCE[topForce].name[L]}</b>, you do well in ${CAREER_FORCE[topForce][L]}. Your ${elName} energy specifically points toward ${CAREER_EL[d.el][L]} — the sweet spot is a role that uses both at once, where you compete on what already comes naturally.`
+    : `Con tu fuerte <b>${FORCE[topForce].name[L]}</b>, te va bien en ${CAREER_FORCE[topForce][L]}. Tu energía ${elName} apunta en concreto hacia ${CAREER_EL[d.el][L]} — el punto ideal es un rol que use ambos a la vez, donde compites con lo que ya te sale natural.`;
+  const careerTips = en
+    ? [`Bias your search toward ${elName}-flavoured fields and ${FORCE_SHORT[topForce]} strengths.`,`If a job drains you fast, it's fighting your chart — change the role, not yourself.`,`Build proof in your lane (a portfolio, results, a niche) before chasing titles.`]
+    : [`Orienta tu búsqueda a campos con sabor ${elName} y a tus fuerzas ${FORCE_SHORT[topForce]}.`,`Si un trabajo te agota rápido, va contra tu carta — cambia el rol, no a ti.`,`Construye pruebas en lo tuyo (portafolio, resultados, un nicho) antes de buscar títulos.`];
+  const starTipMap = {
+    dohwa: en?`Point your natural charm at a public or creative outlet — it's a gift, use it on purpose.`:`Dirige tu encanto natural a una salida pública o creativa — es un don, úsalo a propósito.`,
+    yeokma: en?`Say yes to travel, relocation and new scenes — movement is luck for you.`:`Di que sí a viajar, mudarte y a escenarios nuevos — el movimiento es tu suerte.`,
+    hwagae: en?`Guard real alone-time — your deepest, best work is born there.`:`Protege tu tiempo a solas — tu mejor obra, la más profunda, nace ahí.`,
+    cheoneul: en?`When you're stuck, ask — your luck tends to arrive through the right person.`:`Cuando te atasques, pide ayuda — tu suerte suele llegar por la persona correcta.`
+  };
+  const starTips = stars.map(s=>starTipMap[s]);
+  const starsBody = stars.length ? stars.map(s=>`<p><b>${SAL[s].name[L]}</b> — ${SAL[s].text[L]}</p>`).join('') : `<p>${T('p_starsNone')}</p>`;
+  return ''
+   + pblk('🧭', T('p_power'), leadP(SHIN[isStrong?'strong':'weak'][L].replace(/\{el\}/g,'<b>'+elName+'</b>').replace('{fav}','<b>'+favStr+'</b>')), powerTips)
+   + pblk('☯', T('p_forces'), `<p class="plead">${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</p><p>${FORCE[topForce].strong[L]}</p><p class="psmall">${en?'Faintest in your chart':'Lo más tenue en tu carta'}: <b>${FORCE[lowForce].name[L]} (${FORCE_SHORT[lowForce]})</b> — ${FORCE[lowForce].low[L]}</p><div class="pchips">${forceChips}</div>`, forcesTips)
+   + pblk('📅', T('p_2026'), leadP(P.y2026[L]) + `<div class="pchips"><span class="pchip good">${T('p_best')}: ${P.bestM[L]}</span><span class="pchip warn">${T('p_caution')}: ${P.cautM[L]}</span></div>`, PREMIUM_TIPS[d.el].y2026[L])
+   + pblk('💞', T('p_love'), leadP(P.love[L]) + `<p>${SPOUSE[d.dayBranchEl][L]}</p><p class="pmatch">✅ ${T('p_match')}: <b>${goodNames}</b> &nbsp;·&nbsp; ❌ ${T('p_clash')}: <b>${badName}</b></p>`, PREMIUM_TIPS[d.el].love[L])
+   + pblk('💰', T('p_wealth'), leadP(P.wealth[L]) + `<p class="psmall">${T('p_wealthEl')}: <b>${EL_NAME[wealthEl][L]}</b></p>`, PREMIUM_TIPS[d.el].wealth[L])
+   + pblk('💼', T('p_career'), `<p class="plead">${careerLead}</p><p>${careerBody}</p>`, careerTips)
+   + pblk('⭐', T('p_stars'), starsBody, starTips)
+   + pblk('🧘', T('p_plan'), leadP(P.mental[L]), PREMIUM_TIPS[d.el].mental[L]);
 }
 function premiumTeaserHTML(d){
   const P=PREMIUM[d.el], L=LANG;
