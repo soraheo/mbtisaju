@@ -527,6 +527,11 @@ const I18N = {
   p_num:{en:"Numbers",es:"Números"},
   p_luckNote:{en:"Lean on {el} — its color, day and direction recharge your weakest energy.",es:"Apóyate en {el}: su color, día y dirección recargan tu energía más débil."},
   p_plan:{en:"Premium 7-day mental reset",es:"Reinicio mental premium de 7 días"},
+  p_power:{en:"Your power balance (신강·신약)",es:"Tu equilibrio de poder (신강·신약)"},
+  p_forces:{en:"Your life forces · Ten Gods (십성)",es:"Tus fuerzas de vida · Diez Dioses (십성)"},
+  p_career:{en:"Career & aptitude",es:"Carrera y aptitud"},
+  p_stars:{en:"Your special stars (신살)",es:"Tus estrellas especiales (신살)"},
+  p_starsNone:{en:"No major special stars stand out — your chart reads steady and grounded rather than dramatic, which is its own kind of strength.",es:"No destacan estrellas especiales mayores — tu carta se lee estable y con los pies en la tierra más que dramática, que es su propia fortaleza."},
   archLabel:{en:"YOUR ARCHETYPE",es:"TU ARQUETIPO"},
   coreMbti:{en:"The MBTI side",es:"El lado MBTI"},
   coreSaju:{en:"The Saju side",es:"El lado Saju"},
@@ -800,18 +805,104 @@ const PREMIUM={
   wealth:{en:"This is your strongest wealth year of the cycle — Fire opportunities are everywhere. Flexible, varied income suits you. Because cash flows in and out easily, lock one fixed savings habit you never touch.",es:"Es tu año de mayor riqueza del ciclo: las oportunidades de Fuego están por todas partes. Te van los ingresos flexibles y variados. Como el dinero entra y sale con facilidad, fija un hábito de ahorro que nunca toques."},
   mental:{en:"7-day reset: keep a steady sleep + warmth routine; cut late-night scrolling that feeds anxious thoughts; talk one worry out loud each day. Water floods under stress — it needs to flow and be warmed, not pool inside.",es:"Reinicio de 7 días: mantén una rutina estable de sueño y calor; corta el móvil de madrugada que alimenta la ansiedad; habla una preocupación en voz alta cada día. El Agua se desborda bajo estrés: necesita fluir y calentarse, no estancarse."}}
 };
+// ===== Saju depth: Ten Gods (십성), strength (신강/신약), special stars (신살) =====
+const GEN={wood:'fire',fire:'earth',earth:'metal',metal:'water',water:'wood'};       // D generates GEN[D]
+const CTRLm={wood:'earth',fire:'metal',earth:'water',metal:'wood',water:'fire'};     // D controls CTRLm[D]
+const GENOF={fire:'wood',earth:'fire',metal:'earth',water:'metal',wood:'water'};     // GENOF[D] generates D
+const CTRLOF={earth:'wood',metal:'fire',water:'earth',wood:'metal',fire:'water'};    // CTRLOF[D] controls D
+function tenGod(dayEl,x){ if(x===dayEl)return'self'; if(GEN[dayEl]===x)return'output'; if(CTRLm[dayEl]===x)return'wealth'; if(CTRLm[x]===dayEl)return'power'; return'support'; }
+const FORCE_SHORT={self:'비겁',output:'식상',wealth:'재성',power:'관성',support:'인성'};
+const FORCE={
+ self:{name:{en:"Self & Independence",es:"Yo e Independencia"},
+  strong:{en:"Self-energy runs strong: independent, self-reliant and competitive, you'd rather build it your own way and trust your own judgment. The shadow is stubbornness and friction with partners over money, control or ego — practice sharing the wheel.",es:"La energía del yo es fuerte: independiente, autosuficiente y competitiva, prefieres hacerlo a tu manera y confiar en tu criterio. La sombra es la terquedad y los roces con socios o pareja por dinero, control o ego — practica compartir el volante."},
+  low:{en:"Self-energy is light — you lean toward collaboration over going solo and read the room before asserting. Build a little more 'this is what I want' muscle.",es:"La energía del yo es ligera — te inclinas a colaborar más que a ir sola y lees el ambiente antes de imponerte. Desarrolla un poco más el músculo de 'esto es lo que yo quiero'."}},
+ output:{name:{en:"Expression & Creativity",es:"Expresión y Creatividad"},
+  strong:{en:"Expression runs strong: creative, articulate and naturally performative — talk, writing, art, teaching, content. You give and create generously and need a real outlet or you feel stifled. (In a woman's chart this also speaks to children.)",es:"La expresión es fuerte: creativa, elocuente y naturalmente expresiva — palabra, escritura, arte, enseñanza, contenido. Das y creas con generosidad y necesitas una salida real o te sientes ahogada. (En la carta de una mujer también habla de los hijos.)"},
+  low:{en:"Expression is quieter — more inward than performative. When you do share your ideas and talents out loud, doors open; give yourself the stage more often.",es:"La expresión es más callada — más interior que performativa. Cuando compartes tus ideas y talentos en voz alta se abren puertas; date el escenario más seguido."}},
+ wealth:{name:{en:"Wealth & Realism",es:"Riqueza y Realismo"},
+  strong:{en:"A strong wealth force: practical, resourceful and good with money, opportunities and the pleasures of life — you see what things are worth and how to get them. Watch over-valuing the material; money is a tool, not the scoreboard. (In a man's chart this also speaks to a partner.)",es:"Una fuerza de riqueza fuerte: práctica, ingeniosa y buena con el dinero, las oportunidades y los placeres — ves cuánto valen las cosas y cómo conseguirlas. Cuidado con sobrevalorar lo material; el dinero es herramienta, no el marcador. (En la carta de un hombre también habla de la pareja.)"},
+  low:{en:"The wealth force is light — you're guided more by meaning than money, and prosperity comes through steadiness rather than hustle. Build one consistent money habit and let it compound.",es:"La fuerza de la riqueza es ligera — te guía más el sentido que el dinero, y la prosperidad llega por constancia más que por el ajetreo. Crea un hábito de dinero constante y déjalo crecer."}},
+ power:{name:{en:"Discipline & Status",es:"Disciplina y Estatus"},
+  strong:{en:"A strong power force: responsible, disciplined and drawn to status, career and doing things 'right' — you thrive with structure, titles and clear roles. The cost is pressure and self-imposed weight; let some standards be 'good enough'. (In a woman's chart this also speaks to a partner.)",es:"Una fuerza de poder fuerte: responsable, disciplinada y atraída por el estatus, la carrera y hacer las cosas 'bien' — florecés con estructura, títulos y roles claros. El costo es la presión y el peso autoimpuesto; deja que algunos estándares sean 'suficientemente buenos'. (En la carta de una mujer también habla de la pareja.)"},
+  low:{en:"The power force is light — you resist being boxed in and prefer freedom over hierarchy. Self-set deadlines and structure (rather than a boss) bring out your best.",es:"La fuerza del poder es ligera — te resistes a que te encasillen y prefieres la libertad a la jerarquía. Las metas que tú misma te pones (más que un jefe) sacan lo mejor de ti."}},
+ support:{name:{en:"Support & Wisdom",es:"Apoyo y Sabiduría"},
+  strong:{en:"A strong support force: thoughtful, studious and intuitive, with a sense of being protected and helped — you learn fast and value knowledge, credentials and mentors. The shadow is overthinking and leaning on comfort; balance study with action. (This also speaks to your mother and benefactors.)",es:"Una fuerza de apoyo fuerte: reflexiva, estudiosa e intuitiva, con sensación de estar protegida y ayudada — aprendes rápido y valoras el conocimiento, los títulos y los mentores. La sombra es darle vueltas y apoyarte en la comodidad; equilibra estudio con acción. (También habla de tu madre y benefactores.)"},
+  low:{en:"The support force is light — you learn by doing more than by books or mentors. Finding one steady mentor or knowledge base would give you a real edge.",es:"La fuerza del apoyo es ligera — aprendes haciendo más que por libros o mentores. Encontrar un mentor estable o una base de conocimiento te daría una ventaja real."}}
+};
+const SHIN={
+ strong:{en:"Your day-master <b>{el}</b> is <b>strong</b> — well-supported across your chart. You have abundant self-energy: confident, resilient and able to stand alone. You grow by channelling it OUTWARD — into work, creation, goals and giving. Too much can read as stubborn or domineering. Your balancing elements are <b>{fav}</b>; lean on their colours, seasons, people and activities.",es:"Tu maestro del día <b>{el}</b> es <b>fuerte</b> — bien apoyado en toda tu carta. Tienes energía propia de sobra: confiada, resiliente y capaz de sostenerte sola. Creces canalizándola HACIA AFUERA — trabajo, creación, metas y dar. En exceso puede leerse como terca o dominante. Tus elementos de equilibrio son <b>{fav}</b>; apóyate en sus colores, estaciones, personas y actividades."},
+ weak:{en:"Your day-master <b>{el}</b> is on the <b>weaker</b> side — less reinforced in your chart. Your self-energy thrives on SUPPORT: rest, allies, learning and roots restore you, and you shine more in collaboration than going it alone. Protect your energy and don't overextend. Your nourishing elements are <b>{fav}</b>; lean on their colours, seasons, people and activities.",es:"Tu maestro del día <b>{el}</b> está del lado <b>más débil</b> — menos reforzado en tu carta. Tu energía propia florece con APOYO: descanso, aliados, aprendizaje y raíces te restauran, y brillas más en colaboración que en solitario. Protege tu energía y no te sobreexijas. Tus elementos que te nutren son <b>{fav}</b>; apóyate en sus colores, estaciones, personas y actividades."}
+};
+const SPOUSE={
+ wood:{en:"Spouse palace (your Day branch) is Wood — you tend to pair with someone principled, growth-minded and a bit of a planner, who wants to build a future with you.",es:"El palacio del cónyuge (rama del Día) es Madera — sueles emparejarte con alguien con principios, orientado al crecimiento y algo planificador, que quiere construir un futuro contigo."},
+ fire:{en:"Spouse palace (your Day branch) is Fire — you're drawn to a warm, expressive, lively partner who brings energy, passion and sociability.",es:"El palacio del cónyuge (rama del Día) es Fuego — te atrae una pareja cálida, expresiva y vivaz que aporta energía, pasión y vida social."},
+ earth:{en:"Spouse palace (your Day branch) is Earth — you tend to pair with someone steady, loyal and home-loving, who gives you security and a real base.",es:"El palacio del cónyuge (rama del Día) es Tierra — sueles emparejarte con alguien estable, leal y hogareño, que te da seguridad y una base real."},
+ metal:{en:"Spouse palace (your Day branch) is Metal — you're drawn to a sharp, principled, loyal partner with clear values and a strong sense of right and wrong.",es:"El palacio del cónyuge (rama del Día) es Metal — te atrae una pareja aguda, con principios y leal, de valores claros y fuerte sentido del bien y el mal."},
+ water:{en:"Spouse palace (your Day branch) is Water — you tend to pair with an adaptable, intuitive, deep partner who understands you without many words.",es:"El palacio del cónyuge (rama del Día) es Agua — sueles emparejarte con una pareja adaptable, intuitiva y profunda que te entiende sin muchas palabras."}
+};
+const CAREER_FORCE={
+ self:{en:"independent and entrepreneurial paths — freelancing, founding something, sport, anything where you compete and own the result",es:"caminos independientes y emprendedores — freelance, fundar algo, deporte, todo donde compites y eres dueña del resultado"},
+ output:{en:"creative and expressive fields — content, media, performing, design, teaching, marketing and the arts",es:"campos creativos y expresivos — contenido, medios, escenario, diseño, enseñanza, marketing y las artes"},
+ wealth:{en:"business and money-facing fields — sales, trade, finance, real estate and entrepreneurship, anything with tangible results",es:"campos de negocio y dinero — ventas, comercio, finanzas, bienes raíces y emprendimiento, todo con resultados tangibles"},
+ power:{en:"structured, status-bearing fields — management, law, public service, large organisations and leadership tracks",es:"campos estructurados y de estatus — gestión, derecho, servicio público, grandes organizaciones y rutas de liderazgo"},
+ support:{en:"knowledge and care fields — research, academia, healthcare, counselling and advising, anything where expertise and trust matter",es:"campos de conocimiento y cuidado — investigación, academia, salud, consejería y asesoría, todo donde importan la experticia y la confianza"}
+};
+const CAREER_EL={
+ wood:{en:"education, planning, publishing, design and growth-oriented work",es:"educación, planificación, edición, diseño y trabajo orientado al crecimiento"},
+ fire:{en:"media, beauty, performance, energy and anything in the spotlight",es:"medios, belleza, escenario, energía y todo bajo los reflectores"},
+ earth:{en:"real estate, agriculture, care, hospitality and steady institutions",es:"bienes raíces, agricultura, cuidado, hospitalidad e instituciones estables"},
+ metal:{en:"finance, law, engineering, precision crafts and quality work",es:"finanzas, derecho, ingeniería, oficios de precisión y trabajo de calidad"},
+ water:{en:"trade, communication, travel, fluids/medicine and ideas that move",es:"comercio, comunicación, viajes, fluidos/medicina e ideas que se mueven"}
+};
+const SAL={
+ dohwa:{name:{en:"🌸 Peach Blossom (도화살)",es:"🌸 Flor de Durazno (도화살)"},text:{en:"You carry natural charm and magnetism — people are drawn to you, and romance and attention find you easily. Great for anything performative or public-facing; just steer that attention where you want it.",es:"Llevas un encanto y magnetismo naturales — la gente se siente atraída por ti, y el romance y la atención te encuentran con facilidad. Genial para lo escénico o de cara al público; solo dirige esa atención hacia donde tú quieras."}},
+ yeokma:{name:{en:"🐎 Traveling Horse (역마살)",es:"🐎 Caballo Viajero (역마살)"},text:{en:"A star of movement, travel and change — you're wired for new places, mobility and international life, and you feel restless when stuck. Living, working or studying abroad (hello, Korea) suits you beautifully.",es:"Una estrella de movimiento, viaje y cambio — estás hecha para los lugares nuevos, la movilidad y la vida internacional, y te inquietas cuando te estancas. Vivir, trabajar o estudiar en el extranjero (hola, Corea) te va de maravilla."}},
+ hwagae:{name:{en:"🎨 Flower Canopy (화개살)",es:"🎨 Dosel de Flores (화개살)"},text:{en:"A star of art, depth and the inner world — real talent for creativity, spirituality and research, and anything that needs solitude and focus. You recharge in alone-time, and your best work often comes from it.",es:"Una estrella del arte, la profundidad y el mundo interior — verdadero talento para la creatividad, la espiritualidad y la investigación, y todo lo que pide soledad y concentración. Recargas en soledad, y tu mejor obra suele nacer de ahí."}},
+ cheoneul:{name:{en:"🍀 Heaven's Noble Helper (천을귀인)",es:"🍀 Noble Protector del Cielo (천을귀인)"},text:{en:"The luckiest star in Saju — hidden helpers and protection: when things get hard, the right person or break tends to appear. A genuinely auspicious mark to carry.",es:"La estrella más afortunada del Saju — ayudantes ocultos y protección: cuando las cosas se ponen difíciles, suele aparecer la persona o la oportunidad correcta. Una marca genuinamente auspiciosa."}}
+};
+const BRANCH_GROUP={0:'water',4:'water',8:'water',2:'fire',6:'fire',10:'fire',5:'metal',9:'metal',1:'metal',11:'wood',3:'wood',7:'wood'};
+const GROUP_STARS={water:{dohwa:9,yeokma:2,hwagae:4},fire:{dohwa:3,yeokma:8,hwagae:10},metal:{dohwa:6,yeokma:11,hwagae:1},wood:{dohwa:0,yeokma:5,hwagae:7}};
+const NOBLE={0:[1,7],4:[1,7],6:[1,7],1:[0,8],5:[0,8],2:[11,9],3:[11,9],7:[2,6],8:[3,5],9:[3,5]};
+function computeStars(branchIdx, dayBranchIdx, dayStemIdx){
+  var p=[], g=BRANCH_GROUP[dayBranchIdx], t=g?GROUP_STARS[g]:null;
+  if(t){ if(branchIdx.indexOf(t.dohwa)>=0)p.push('dohwa'); if(branchIdx.indexOf(t.yeokma)>=0)p.push('yeokma'); if(branchIdx.indexOf(t.hwagae)>=0)p.push('hwagae'); }
+  var nb=NOBLE[dayStemIdx]; if(nb && nb.some(b=>branchIdx.indexOf(b)>=0)) p.push('cheoneul');
+  return p;
+}
 function premiumHTML(d){
-  const P=PREMIUM[d.el], L=LANG, m=EL_MATCH[d.el];
+  const P=PREMIUM[d.el], L=LANG, m=EL_MATCH[d.el], elName=EL_NAME[d.el][L];
   const goodNames=m.good.map(e=>EL_NAME[e][L]).join(L==='en'?' & ':' y ');
-  const badName=EL_NAME[m.bad][L];
-  const wealthEl=EL_WEALTH[d.el], luckEl=d.weak;
+  const badName=EL_NAME[m.bad][L], wealthEl=EL_WEALTH[d.el];
+  // Ten Gods forces from the element tally
+  const ft={self:0,output:0,wealth:0,power:0,support:0};
+  ['wood','fire','earth','metal','water'].forEach(e=>{ ft[tenGod(d.el,e)] += (d.tally[e]||0); });
+  const total=Object.values(ft).reduce((a,b)=>a+b,0)||1;
+  const ordered=Object.keys(ft).sort((a,b)=>ft[b]-ft[a]);
+  const topForce=ordered[0], lowForce=ordered[ordered.length-1];
+  const isStrong=(ft.self+ft.support) >= total/2;
+  const favEls = isStrong ? [GEN[d.el],EL_WEALTH[d.el],CTRLOF[d.el]] : [d.el,GENOF[d.el]];
+  const favStr = favEls.map(e=>EL_NAME[e][L]).join(', ');
+  const forceChips = ordered.map(k=>`<span class="pchip ${k===topForce?'good':''}">${FORCE_SHORT[k]} ${ft[k]}</span>`).join('');
+  const stars=computeStars(d.branchIdx, d.dayBranchIdx, d.dayStemIdx);
+  const starsHTML = stars.length ? stars.map(s=>`<p>${SAL[s].name[L]} — ${SAL[s].text[L]}</p>`).join('') : `<p>${T('p_starsNone')}</p>`;
+  const careerTxt = L==='en'
+    ? `With your strong <b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b>, you do well in ${CAREER_FORCE[topForce][L]}. Your ${elName} energy points toward ${CAREER_EL[d.el][L]}.`
+    : `Con tu fuerte <b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b>, te va bien en ${CAREER_FORCE[topForce][L]}. Tu energía ${elName} apunta hacia ${CAREER_EL[d.el][L]}.`;
   return `
+   <div class="pblock"><h4>🧭 ${T('p_power')}</h4><p>${SHIN[isStrong?'strong':'weak'][L].replace(/\{el\}/g,elName).replace('{fav}',favStr)}</p></div>
+   <div class="pblock"><h4>☯ ${T('p_forces')}</h4>
+     <p><b>${FORCE[topForce].name[L]} (${FORCE_SHORT[topForce]})</b> — ${FORCE[topForce].strong[L]}</p>
+     <p class="psmall">${L==='en'?'Faintest':'Lo más tenue'}: <b>${FORCE[lowForce].name[L]} (${FORCE_SHORT[lowForce]})</b> — ${FORCE[lowForce].low[L]}</p>
+     <div class="pchips">${forceChips}</div></div>
    <div class="pblock"><h4>📅 ${T('p_2026')}</h4><p>${P.y2026[L]}</p>
      <div class="pchips"><span class="pchip good">${T('p_best')}: ${P.bestM[L]}</span><span class="pchip warn">${T('p_caution')}: ${P.cautM[L]}</span></div></div>
    <div class="pblock"><h4>💞 ${T('p_love')}</h4><p>${P.love[L]}</p>
+     <p>${SPOUSE[d.dayBranchEl][L]}</p>
      <p class="pmatch">✅ ${T('p_match')}: <b>${goodNames}</b> &nbsp;·&nbsp; ❌ ${T('p_clash')}: <b>${badName}</b></p></div>
    <div class="pblock"><h4>💰 ${T('p_wealth')}</h4><p>${P.wealth[L]}</p>
      <p class="psmall">${T('p_wealthEl')}: <b>${EL_NAME[wealthEl][L]}</b></p></div>
+   <div class="pblock"><h4>💼 ${T('p_career')}</h4><p>${careerTxt}</p></div>
+   <div class="pblock"><h4>⭐ ${T('p_stars')}</h4>${starsHTML}</div>
    <div class="pblock"><h4>🧘 ${T('p_plan')}</h4><p>${P.mental[L]}</p></div>`;
 }
 function premiumTeaserHTML(d){
@@ -819,9 +910,13 @@ function premiumTeaserHTML(d){
   const parts=P.y2026[L].split('. ');
   const hook=parts.slice(0,2).join('. ')+(parts.length>2?'…':'');
   const rows=[
+    {ic:'🧭',t:T('p_power'),p:L==='en'?'Is your day-master strong or weak, and which elements empower you…':'¿Tu maestro del día es fuerte o débil, y qué elementos te potencian…'},
+    {ic:'☯',t:T('p_forces'),p:L==='en'?'Wealth, power, expression, support, self — which Ten-God forces run your life…':'Riqueza, poder, expresión, apoyo, yo — qué fuerzas (Diez Dioses) rigen tu vida…'},
     {ic:'📅',t:T('p_2026'),p:P.y2026[L]},
     {ic:'💞',t:T('p_love'),p:P.love[L]},
     {ic:'💰',t:T('p_wealth'),p:P.wealth[L]},
+    {ic:'💼',t:T('p_career'),p:L==='en'?'The fields and roles your chart is actually built for…':'Los campos y roles para los que tu carta está hecha…'},
+    {ic:'⭐',t:T('p_stars'),p:L==='en'?'Peach Blossom, Traveling Horse, Noble Helper — your special stars…':'Flor de Durazno, Caballo Viajero, Noble Protector — tus estrellas especiales…'},
     {ic:'🧘',t:T('p_plan'),p:P.mental[L]}
   ];
   return `<div class="pteaser"><div class="pteaser-label">✨ ${T('teaserLabel')}</div><p>${hook}</p></div>`
@@ -1127,7 +1222,9 @@ function generate(rerenderOnly){
 
   // premium "Deep Reading" — teaser→lock funnel (sajufy-style)
   const _ul=isUnlocked();
-  document.getElementById('premiumBody').innerHTML = _ul ? premiumHTML({el:el, weak:weak}) : premiumTeaserHTML({el:el, weak:weak});
+  const _bIdx=[saju.pillars.year.b, saju.pillars.month.b, saju.pillars.day.b].concat(saju.pillars.hour?[saju.pillars.hour.b]:[]).map(b=>BRANCHES.indexOf(b));
+  const _pd={el:el, weak:weak, tally:saju.tally, branchIdx:_bIdx, dayBranchIdx:BRANCHES.indexOf(saju.pillars.day.b), dayStemIdx:STEMS.indexOf(saju.pillars.day.s), dayBranchEl:saju.pillars.day.b.el};
+  document.getElementById('premiumBody').innerHTML = _ul ? premiumHTML(_pd) : premiumTeaserHTML(_pd);
   document.getElementById('premiumCTA').style.display = _ul?'none':'block';
   document.getElementById('unlockedBadge').style.display = _ul?'inline-block':'none';
   saveInputs();
