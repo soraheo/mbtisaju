@@ -125,6 +125,8 @@
   body.dark .moTag.good{color:#6ee7a0}body.dark .moTag.ok{color:#f0c674}body.dark .moTag.watch{color:#ff9d7a}
   body.dark .moName,body.dark .lsHead{color:var(--ink)}
   .unlocked-badge{display:inline-block;font-size:11px;font-weight:700;color:#2e7d44;background:rgba(52,168,83,.12);padding:3px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
+  .tipbox{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:2px 0 18px;font-size:14px;color:var(--muted)}
+  .tipbox .btn{width:auto;margin-top:0;padding:10px 18px;font-size:14px}
 
   /* archetype (sajufy-style memorable name) */
   .archetype{text-align:center;margin:0 0 16px}
@@ -394,9 +396,14 @@
       <p class="sub" data-i="premiumSub">A deeper look — timing, compatibility, money windows & a premium care plan.</p>
       <div id="premiumBody"></div>
       <div id="premiumCTA" style="display:none">
-        <button class="btn unlockBtn" onclick="unlock()">🔓 <span data-i="unlockBtn">Unlock the Deep Reading — free</span></button>
-        <div class="lockNote" data-i="lockNote">Just your email · instant access · no spam</div>
+        <button class="btn unlockBtn" onclick="unlock()">🔓 <span data-i="unlockBtn">Show my Deep Reading — free</span></button>
+        <div class="lockNote" data-i="lockNote">Free · instant · no sign-up</div>
       </div>
+    </div>
+
+    <div id="tipBox" class="tipbox" style="display:none">
+      <span data-i="tipText">Enjoyed your reading?</span>
+      <a id="kofiBtn" class="btn ghost" href="#" target="_blank" rel="noopener" onclick="track('kofi_click')">☕ <span data-i="tipBtn">Buy me a coffee</span></a>
     </div>
 
     <div class="card">
@@ -432,20 +439,6 @@
       <button id="optB" onclick="answer('b')"></button>
     </div>
     <div id="quizResult" class="quizresult"></div>
-  </div>
-</div>
-
-<!-- EMAIL CAPTURE POPUP (unlock Deep Reading for an email) -->
-<div id="payOverlay" class="overlay">
-  <div class="paycard">
-    <div class="payhead">
-      <div><div class="payttl">✨ <span data-i="emTtl">Unlock your Deep Reading</span></div><div class="paysub" data-i="emSub">Enter your email and we'll open it right away.</div></div>
-      <button onclick="closeEmail()" aria-label="close">✕</button>
-    </div>
-    <input id="emailInput" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" style="width:100%;margin:8px 0 2px" onkeydown="if(event.key==='Enter')submitEmail()" />
-    <div id="emailErr" class="paynote" style="color:#c0492b;display:none" data-i="emErr">Please enter a valid email.</div>
-    <button class="btn" onclick="submitEmail()">🔓 <span data-i="emBtn">Unlock now — free</span></button>
-    <div class="paynote" data-i="emNote">No spam. We'll only email you about your reading.</div>
   </div>
 </div>
 
@@ -518,13 +511,10 @@ const I18N = {
   lk3:{en:"💰 Your wealth windows for the year",es:"💰 Tus ventanas de riqueza del año"},
   lk4:{en:"🍀 Lucky color, day, direction & numbers",es:"🍀 Color, día, dirección y números de la suerte"},
   lk5:{en:"🧘 Premium 7-day mental reset plan",es:"🧘 Plan premium de 7 días para reiniciar tu mente"},
-  unlockBtn:{en:"Unlock the Deep Reading — free",es:"Desbloquear la Lectura Profunda — gratis"},
-  lockNote:{en:"Just your email · instant access · no spam",es:"Solo tu correo · acceso inmediato · sin spam"},
-  emTtl:{en:"Unlock your Deep Reading",es:"Desbloquea tu Lectura Profunda"},
-  emSub:{en:"Enter your email and we'll open it right away.",es:"Escribe tu correo y la abrimos al instante."},
-  emErr:{en:"Please enter a valid email.",es:"Introduce un correo válido."},
-  emBtn:{en:"Unlock now — free",es:"Desbloquear ahora — gratis"},
-  emNote:{en:"No spam. We'll only email you about your reading.",es:"Sin spam. Solo te escribiremos sobre tu lectura."},
+  unlockBtn:{en:"Show my Deep Reading — free",es:"Ver mi Lectura Profunda — gratis"},
+  lockNote:{en:"Free · instant · no sign-up",es:"Gratis · al instante · sin registro"},
+  tipText:{en:"Enjoyed your reading?",es:"¿Te gustó tu lectura?"},
+  tipBtn:{en:"Buy me a coffee",es:"Invítame un café"},
   paySub:{en:"Deep Reading — full unlock",es:"Lectura Profunda — desbloqueo completo"},
   payItem:{en:"Deep Reading",es:"Lectura Profunda"},
   payTotal:{en:"Total",es:"Total"},
@@ -757,11 +747,10 @@ function downloadCard(){
   img.src=src;
 }
 
-/* ===================== premium "Deep Reading" (paywall, rule-based) ===================== */
-// ⬇️⬇️⬇️ OWNER: paste your Stripe Payment Link here (set its success URL to  https://YOUR-SITE/?unlocked=1 )
-// Paste your form endpoint to collect emails centrally (Formspree: https://formspree.io/f/XXXXXXX).
-// Leave empty to run locally (still unlocks + tracks clicks; emails just won't be sent anywhere).
-const FORM_ENDPOINT = "";
+/* ===================== "Deep Reading" (free reveal, rule-based) ===================== */
+// ⬇️ OWNER: paste your Ko-fi link here (e.g. https://ko-fi.com/yourname) to show a tip button.
+// Leave empty and the tip button stays hidden.
+const KOFI_URL = "";
 
 function track(name){ try{ if(window.va) window.va('event',{name:name}); }catch(e){} }
 function T(k){return I18N[k]?I18N[k][LANG]:k;}
@@ -771,24 +760,17 @@ function saveInputs(){try{localStorage.setItem('ksm_input',JSON.stringify({
   noTime:document.getElementById('noTime').checked, gender:document.getElementById('gender').value,
   mbti:document.getElementById('mbti').value, focus:document.getElementById('focus').value,
   name:document.getElementById('name').value, lang:LANG }));}catch(e){}}
-function unlock(){ saveInputs(); track('unlock_click'); openEmail(); }
-function openEmail(){
-  document.getElementById('payOverlay').classList.add('show');
-  var i=document.getElementById('emailInput'); if(i) setTimeout(function(){ i.focus(); },60);
-}
-function closeEmail(){ document.getElementById('payOverlay').classList.remove('show'); }
-function submitEmail(){
-  var i=document.getElementById('emailInput'), err=document.getElementById('emailErr');
-  var email=(i&&i.value||'').trim();
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ if(err) err.style.display='block'; if(i) i.focus(); return; }
-  if(err) err.style.display='none';
-  track('email_submit');
-  if(FORM_ENDPOINT){ try{ fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({email:email,source:'saju-compass-deep-reading',lang:LANG})}); }catch(e){} }
-  try{ localStorage.setItem('ksm_unlocked','1'); localStorage.setItem('ksm_email',email); }catch(e){}
-  closeEmail();
+function unlock(){
+  saveInputs(); track('unlock_click');
+  try{ localStorage.setItem('ksm_unlocked','1'); }catch(e){}
   if(document.getElementById('report').style.display==='block') generate();
   var pc=document.getElementById('premiumCard');
   if(pc) setTimeout(function(){ pc.scrollIntoView({block:'start',behavior:'smooth'}); }, 150);
+}
+function initTip(){
+  var box=document.getElementById('tipBox'), a=document.getElementById('kofiBtn');
+  if(!box||!a) return;
+  if(KOFI_URL){ a.href=KOFI_URL; box.style.display=''; } else { box.style.display='none'; }
 }
 
 const EL_COLOR={wood:{en:"Green",es:"Verde"},fire:{en:"Red",es:"Rojo"},earth:{en:"Yellow / earth tones",es:"Amarillo / tonos tierra"},metal:{en:"White / gold",es:"Blanco / dorado"},water:{en:"Blue / black",es:"Azul / negro"}};
@@ -1527,6 +1509,7 @@ function useQuiz(){
 }
 initTime();
 setLang('en');
+initTip();
 
 // restore saved theme (dark is the default)
 try{ if(localStorage.getItem('ksm_theme')==='light'){ document.body.classList.remove('dark'); document.getElementById('themeBtn').textContent='🌙'; } else { document.body.classList.add('dark'); document.getElementById('themeBtn').textContent='☀️'; } }catch(e){}
