@@ -125,8 +125,8 @@
   body.dark .moTag.good{color:#6ee7a0}body.dark .moTag.ok{color:#f0c674}body.dark .moTag.watch{color:#ff9d7a}
   body.dark .moName,body.dark .lsHead{color:var(--ink)}
   .unlocked-badge{display:inline-block;font-size:11px;font-weight:700;color:#2e7d44;background:rgba(52,168,83,.12);padding:3px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
-  .tipbox{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:2px 0 18px;font-size:14px;color:var(--muted)}
-  .tipbox .btn{width:auto;margin-top:0;padding:10px 18px;font-size:14px}
+  .introMsg{font-size:14.5px;line-height:1.65;margin:10px 0 18px;color:var(--ink)}
+  .introMsg b{color:var(--brand)}
 
   /* archetype (sajufy-style memorable name) */
   .archetype{text-align:center;margin:0 0 16px}
@@ -401,11 +401,6 @@
       </div>
     </div>
 
-    <div id="tipBox" class="tipbox" style="display:none">
-      <span data-i="tipText">Enjoyed your reading?</span>
-      <a id="kofiBtn" class="btn ghost" href="#" target="_blank" rel="noopener" onclick="track('kofi_click')">☕ <span data-i="tipBtn">Buy me a coffee</span></a>
-    </div>
-
     <div class="card">
       <h2>📸 <span data-i="r_share">Share your result</span></h2>
       <p class="sub" data-i="shareSub">Save this card and share it on Instagram!</p>
@@ -439,6 +434,18 @@
       <button id="optB" onclick="answer('b')"></button>
     </div>
     <div id="quizResult" class="quizresult"></div>
+  </div>
+</div>
+
+<!-- INTRO POPUP (gentle reminder before revealing the Deep Reading) -->
+<div id="introOverlay" class="overlay">
+  <div class="paycard">
+    <div class="payhead">
+      <div><div class="payttl"><span data-i="introTtl">Before you read 🌱</span></div></div>
+      <button onclick="closeIntro()" aria-label="close">✕</button>
+    </div>
+    <p class="introMsg" data-i="introMsg">This is just for fun — don't take it too seriously. Think of it as a gentle mirror: a way to notice what you have and what you don't, accept it without judging yourself, and use it as a starting point to grow from here. You are not your chart — you're the one reading it. 💜</p>
+    <button class="btn" onclick="revealDeep()">✨ <span data-i="introBtn">I'm ready — show my reading</span></button>
   </div>
 </div>
 
@@ -513,8 +520,9 @@ const I18N = {
   lk5:{en:"🧘 Premium 7-day mental reset plan",es:"🧘 Plan premium de 7 días para reiniciar tu mente"},
   unlockBtn:{en:"Show my Deep Reading — free",es:"Ver mi Lectura Profunda — gratis"},
   lockNote:{en:"Free · instant · no sign-up",es:"Gratis · al instante · sin registro"},
-  tipText:{en:"Enjoyed your reading?",es:"¿Te gustó tu lectura?"},
-  tipBtn:{en:"Buy me a coffee",es:"Invítame un café"},
+  introTtl:{en:"Before you read 🌱",es:"Antes de leer 🌱"},
+  introMsg:{en:"This is just for fun — don't take it too seriously. Think of it as a gentle mirror: a way to notice <b>what you have and what you don't</b>, accept it without judging yourself, and use it as a starting point to grow from here. You are not your chart — you're the one reading it. 💜",es:"Esto es solo por diversión — no te lo tomes demasiado en serio. Piénsalo como un espejo amable: una forma de notar <b>lo que tienes y lo que no</b>, aceptarlo sin juzgarte, y usarlo como punto de partida para crecer desde aquí. No eres tu carta — eres quien la lee. 💜"},
+  introBtn:{en:"I'm ready — show my reading",es:"Estoy lista — ver mi lectura"},
   paySub:{en:"Deep Reading — full unlock",es:"Lectura Profunda — desbloqueo completo"},
   payItem:{en:"Deep Reading",es:"Lectura Profunda"},
   payTotal:{en:"Total",es:"Total"},
@@ -747,11 +755,7 @@ function downloadCard(){
   img.src=src;
 }
 
-/* ===================== "Deep Reading" (free reveal, rule-based) ===================== */
-// ⬇️ OWNER: paste your Ko-fi link here (e.g. https://ko-fi.com/yourname) to show a tip button.
-// Leave empty and the tip button stays hidden.
-const KOFI_URL = "";
-
+/* ===================== "Deep Reading" (free, with a gentle intro) ===================== */
 function track(name){ try{ if(window.va) window.va('event',{name:name}); }catch(e){} }
 function T(k){return I18N[k]?I18N[k][LANG]:k;}
 function isUnlocked(){try{return localStorage.getItem('ksm_unlocked')==='1';}catch(e){return false;}}
@@ -760,17 +764,15 @@ function saveInputs(){try{localStorage.setItem('ksm_input',JSON.stringify({
   noTime:document.getElementById('noTime').checked, gender:document.getElementById('gender').value,
   mbti:document.getElementById('mbti').value, focus:document.getElementById('focus').value,
   name:document.getElementById('name').value, lang:LANG }));}catch(e){}}
-function unlock(){
-  saveInputs(); track('unlock_click');
+function unlock(){ saveInputs(); track('unlock_click'); openIntro(); }
+function openIntro(){ document.getElementById('introOverlay').classList.add('show'); }
+function closeIntro(){ document.getElementById('introOverlay').classList.remove('show'); }
+function revealDeep(){
+  closeIntro(); track('reading_revealed');
   try{ localStorage.setItem('ksm_unlocked','1'); }catch(e){}
   if(document.getElementById('report').style.display==='block') generate();
   var pc=document.getElementById('premiumCard');
   if(pc) setTimeout(function(){ pc.scrollIntoView({block:'start',behavior:'smooth'}); }, 150);
-}
-function initTip(){
-  var box=document.getElementById('tipBox'), a=document.getElementById('kofiBtn');
-  if(!box||!a) return;
-  if(KOFI_URL){ a.href=KOFI_URL; box.style.display=''; } else { box.style.display='none'; }
 }
 
 const EL_COLOR={wood:{en:"Green",es:"Verde"},fire:{en:"Red",es:"Rojo"},earth:{en:"Yellow / earth tones",es:"Amarillo / tonos tierra"},metal:{en:"White / gold",es:"Blanco / dorado"},water:{en:"Blue / black",es:"Azul / negro"}};
@@ -1509,7 +1511,6 @@ function useQuiz(){
 }
 initTime();
 setLang('en');
-initTip();
 
 // restore saved theme (dark is the default)
 try{ if(localStorage.getItem('ksm_theme')==='light'){ document.body.classList.remove('dark'); document.getElementById('themeBtn').textContent='🌙'; } else { document.body.classList.add('dark'); document.getElementById('themeBtn').textContent='☀️'; } }catch(e){}
