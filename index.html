@@ -394,8 +394,8 @@
       <p class="sub" data-i="premiumSub">A deeper look — timing, compatibility, money windows & a premium care plan.</p>
       <div id="premiumBody"></div>
       <div id="premiumCTA" style="display:none">
-        <button class="btn unlockBtn" onclick="unlock()">☕ <span data-i="unlockBtn">Unlock for $2.50</span></button>
-        <div class="lockNote" data-i="lockNote">One-time · no subscription · secure payment via Stripe</div>
+        <button class="btn unlockBtn" onclick="unlock()">🔓 <span data-i="unlockBtn">Unlock the Deep Reading — free</span></button>
+        <div class="lockNote" data-i="lockNote">Just your email · instant access · no spam</div>
       </div>
     </div>
 
@@ -435,17 +435,17 @@
   </div>
 </div>
 
-<!-- DEMO PAYMENT POPUP (until real Stripe is connected) -->
+<!-- EMAIL CAPTURE POPUP (unlock Deep Reading for an email) -->
 <div id="payOverlay" class="overlay">
   <div class="paycard">
     <div class="payhead">
-      <div><div class="payttl">Saju Compass <span class="demopill">DEMO</span></div><div class="paysub" data-i="paySub">Deep Reading — full unlock</div></div>
-      <button onclick="closePay()" aria-label="close">✕</button>
+      <div><div class="payttl">✨ <span data-i="emTtl">Unlock your Deep Reading</span></div><div class="paysub" data-i="emSub">Enter your email and we'll open it right away.</div></div>
+      <button onclick="closeEmail()" aria-label="close">✕</button>
     </div>
-    <div class="payrow"><span data-i="payItem">Deep Reading</span><b>$2.50</b></div>
-    <div class="paytotal"><span data-i="payTotal">Total</span><b>$2.50</b></div>
-    <button class="btn" onclick="payDemo()">🔒 <span data-i="payBtn">Pay $2.50</span></button>
-    <div class="paynote" data-i="payNote">⚠️ Demo preview — no real charge. Your real Stripe checkout will go here once connected.</div>
+    <input id="emailInput" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" style="width:100%;margin:8px 0 2px" onkeydown="if(event.key==='Enter')submitEmail()" />
+    <div id="emailErr" class="paynote" style="color:#c0492b;display:none" data-i="emErr">Please enter a valid email.</div>
+    <button class="btn" onclick="submitEmail()">🔓 <span data-i="emBtn">Unlock now — free</span></button>
+    <div class="paynote" data-i="emNote">No spam. We'll only email you about your reading.</div>
   </div>
 </div>
 
@@ -518,8 +518,13 @@ const I18N = {
   lk3:{en:"💰 Your wealth windows for the year",es:"💰 Tus ventanas de riqueza del año"},
   lk4:{en:"🍀 Lucky color, day, direction & numbers",es:"🍀 Color, día, dirección y números de la suerte"},
   lk5:{en:"🧘 Premium 7-day mental reset plan",es:"🧘 Plan premium de 7 días para reiniciar tu mente"},
-  unlockBtn:{en:"Unlock for $2.50",es:"Desbloquear por $2.50"},
-  lockNote:{en:"One-time · no subscription · secure payment via Stripe",es:"Pago único · sin suscripción · pago seguro con Stripe"},
+  unlockBtn:{en:"Unlock the Deep Reading — free",es:"Desbloquear la Lectura Profunda — gratis"},
+  lockNote:{en:"Just your email · instant access · no spam",es:"Solo tu correo · acceso inmediato · sin spam"},
+  emTtl:{en:"Unlock your Deep Reading",es:"Desbloquea tu Lectura Profunda"},
+  emSub:{en:"Enter your email and we'll open it right away.",es:"Escribe tu correo y la abrimos al instante."},
+  emErr:{en:"Please enter a valid email.",es:"Introduce un correo válido."},
+  emBtn:{en:"Unlock now — free",es:"Desbloquear ahora — gratis"},
+  emNote:{en:"No spam. We'll only email you about your reading.",es:"Sin spam. Solo te escribiremos sobre tu lectura."},
   paySub:{en:"Deep Reading — full unlock",es:"Lectura Profunda — desbloqueo completo"},
   payItem:{en:"Deep Reading",es:"Lectura Profunda"},
   payTotal:{en:"Total",es:"Total"},
@@ -754,8 +759,11 @@ function downloadCard(){
 
 /* ===================== premium "Deep Reading" (paywall, rule-based) ===================== */
 // ⬇️⬇️⬇️ OWNER: paste your Stripe Payment Link here (set its success URL to  https://YOUR-SITE/?unlocked=1 )
-const STRIPE_LINK = "https://buy.stripe.com/REPLACE_WITH_YOUR_LINK";
+// Paste your form endpoint to collect emails centrally (Formspree: https://formspree.io/f/XXXXXXX).
+// Leave empty to run locally (still unlocks + tracks clicks; emails just won't be sent anywhere).
+const FORM_ENDPOINT = "";
 
+function track(name){ try{ if(window.va) window.va('event',{name:name}); }catch(e){} }
 function T(k){return I18N[k]?I18N[k][LANG]:k;}
 function isUnlocked(){try{return localStorage.getItem('ksm_unlocked')==='1';}catch(e){return false;}}
 function saveInputs(){try{localStorage.setItem('ksm_input',JSON.stringify({
@@ -763,16 +771,21 @@ function saveInputs(){try{localStorage.setItem('ksm_input',JSON.stringify({
   noTime:document.getElementById('noTime').checked, gender:document.getElementById('gender').value,
   mbti:document.getElementById('mbti').value, focus:document.getElementById('focus').value,
   name:document.getElementById('name').value, lang:LANG }));}catch(e){}}
-function unlock(){
-  saveInputs();
-  if(STRIPE_LINK.indexOf('REPLACE_WITH_YOUR_LINK')>=0){ openPay(); return; }  // demo until real Stripe link is set
-  window.location.href = STRIPE_LINK;
+function unlock(){ saveInputs(); track('unlock_click'); openEmail(); }
+function openEmail(){
+  document.getElementById('payOverlay').classList.add('show');
+  var i=document.getElementById('emailInput'); if(i) setTimeout(function(){ i.focus(); },60);
 }
-function openPay(){ document.getElementById('payOverlay').classList.add('show'); }
-function closePay(){ document.getElementById('payOverlay').classList.remove('show'); }
-function payDemo(){
-  closePay();
-  try{ localStorage.setItem('ksm_unlocked','1'); }catch(e){}
+function closeEmail(){ document.getElementById('payOverlay').classList.remove('show'); }
+function submitEmail(){
+  var i=document.getElementById('emailInput'), err=document.getElementById('emailErr');
+  var email=(i&&i.value||'').trim();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ if(err) err.style.display='block'; if(i) i.focus(); return; }
+  if(err) err.style.display='none';
+  track('email_submit');
+  if(FORM_ENDPOINT){ try{ fetch(FORM_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({email:email,source:'saju-compass-deep-reading',lang:LANG})}); }catch(e){} }
+  try{ localStorage.setItem('ksm_unlocked','1'); localStorage.setItem('ksm_email',email); }catch(e){}
+  closeEmail();
   if(document.getElementById('report').style.display==='block') generate();
   var pc=document.getElementById('premiumCard');
   if(pc) setTimeout(function(){ pc.scrollIntoView({block:'start',behavior:'smooth'}); }, 150);
@@ -1438,7 +1451,7 @@ function generate(rerenderOnly){
   // focus-based reorder hint: scroll target unaffected; keep simple
   document.getElementById('inputCard').style.display=rerenderOnly?document.getElementById('inputCard').style.display:'none';
   document.getElementById('report').style.display='block';
-  if(!rerenderOnly) window.scrollTo({top:0,behavior:'smooth'});
+  if(!rerenderOnly){ track('report_generated'); window.scrollTo({top:0,behavior:'smooth'}); }
 }
 function pickMood(k,btn){
   document.querySelectorAll('#mood button').forEach(b=>b.classList.remove('active'));
@@ -1548,5 +1561,8 @@ try{ if(localStorage.getItem('ksm_theme')==='light'){ document.body.classList.re
   }catch(e){}
 })();
 </script>
+<!-- Vercel Web Analytics (free page views + custom events; live only when deployed on Vercel) -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
