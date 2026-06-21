@@ -1191,17 +1191,44 @@ const MONTHS_2026=[
  {m:{en:"November",es:"Noviembre"},el:'water'},{m:{en:"December",es:"Diciembre"},el:'water'}
 ];
 const MONTH_THEME={
- self:{label:{en:"Self & energy",es:"Yo y energía"},rate:'ok',txt:{en:"Your own element is active, so confidence, drive and independence run high — a strong month to start things, assert yourself and push your own plans forward. Just keep an eye on stubbornness and don't steamroll the people around you.",es:"Tu propio elemento está activo, así que la confianza, el empuje y la independencia están altos: un mes fuerte para empezar cosas, hacerte valer y avanzar tus propios planes. Solo cuida la terquedad y no atropelles a quienes te rodean."}},
- output:{label:{en:"Expression & joy",es:"Expresión y disfrute"},rate:'good',txt:{en:"A creative, expressive and social month — ideas flow, you shine in public and enjoyment comes easily. Great for content, performance, dating and showing your work; channel the energy on purpose or it scatters.",es:"Un mes creativo, expresivo y social: las ideas fluyen, brillas en público y el disfrute llega fácil. Ideal para contenido, escenario, citas y mostrar tu trabajo; canaliza la energía a propósito o se dispersa."}},
- wealth:{label:{en:"Money & opportunity",es:"Dinero y oportunidad"},rate:'good',txt:{en:"Your wealth element is active, so income, deals and practical opportunities open up — a strong month to earn, negotiate, sell and invest. Watch impulse spending while money feels easy to come by.",es:"Tu elemento de riqueza está activo, así que se abren ingresos, acuerdos y oportunidades prácticas: un mes fuerte para ganar, negociar, vender e invertir. Cuidado con el gasto impulsivo mientras el dinero parece llegar fácil."}},
- power:{label:{en:"Work & pressure",es:"Trabajo y presión"},rate:'watch',txt:{en:"A demanding, status-driven month — responsibility, work and authority figures take center stage. Good for career moves and discipline, but pressure runs high, so protect your health and don't overcommit.",es:"Un mes exigente y de estatus: la responsabilidad, el trabajo y las figuras de autoridad toman protagonismo. Bueno para movimientos de carrera y disciplina, pero la presión sube, así que cuida tu salud y no te sobrecargues."}},
- support:{label:{en:"Rest & learning",es:"Descanso y aprendizaje"},rate:'ok',txt:{en:"A nourishing, inward month — study, rest, mentors and support matter most. Slow down, learn, lean on your allies and refill your tank; this isn't the month to force big external pushes.",es:"Un mes nutritivo y hacia adentro: el estudio, el descanso, los mentores y el apoyo son lo más importante. Baja el ritmo, aprende, apóyate en tus aliados y recarga; no es el mes para forzar grandes empujes externos."}}
+ self:{label:{en:"Self & energy",es:"Yo y energía"},rate:'ok',lead:{
+   en:["Your own element is active, so confidence and independence run high.","A self-driven month — your energy and willpower are front and center.","Personal drive dominates now; it's a strong time to act on your own plans.","Independent action is favored — trust your own judgment and lead from the front."],
+   es:["Tu propio elemento está activo, así que la confianza y la independencia están altas.","Un mes muy tuyo: tu energía y tu voluntad están al frente.","El impulso personal domina ahora; es buen momento para actuar en tus planes.","Se favorece la acción independiente: confía en tu criterio y lidera desde el frente."]}},
+ output:{label:{en:"Expression & joy",es:"Expresión y disfrute"},rate:'good',lead:{
+   en:["Creativity and self-expression flow easily this month.","A social, expressive month — you shine when you put your work out there.","Your talents want an audience now; visibility and fun come naturally.","Express yourself boldly this month; sharing your ideas opens doors."],
+   es:["La creatividad y la expresión fluyen con facilidad este mes.","Un mes social y expresivo: brillas cuando muestras tu trabajo.","Tus talentos quieren público ahora; la visibilidad y la diversión llegan solas.","Exprésate con audacia este mes; compartir tus ideas abre puertas."]}},
+ wealth:{label:{en:"Money & opportunity",es:"Dinero y oportunidad"},rate:'good',lead:{
+   en:["Your wealth element is active — money and opportunities open up.","A money-and-opportunity month; income and deals are favored.","Practical opportunities and earning power are strong right now.","Money matters move in your favor — negotiate, sell and invest wisely."],
+   es:["Tu elemento de riqueza está activo: el dinero y las oportunidades se abren.","Un mes de dinero y oportunidad; los ingresos y los acuerdos se ven favorecidos.","Las oportunidades prácticas y tu capacidad de ganar están fuertes ahora.","Los asuntos de dinero se mueven a tu favor: negocia, vende e invierte con cabeza."]}},
+ power:{label:{en:"Work & pressure",es:"Trabajo y presión"},rate:'watch',lead:{
+   en:["A demanding, work-heavy month — responsibility and pressure rise.","Status, career and duty take center stage; the load is heavier now.","A high-pressure month where discipline and authority matter most.","Carry your responsibilities steadily; this month rewards reliability over speed."],
+   es:["Un mes exigente y de mucho trabajo: la responsabilidad y la presión suben.","El estatus, la carrera y el deber toman protagonismo; la carga es mayor ahora.","Un mes de alta presión donde la disciplina y la autoridad importan más.","Lleva tus responsabilidades con constancia; este mes premia la fiabilidad más que la prisa."]}},
+ support:{label:{en:"Rest & learning",es:"Descanso y aprendizaje"},rate:'ok',lead:{
+   en:["A nourishing, inward month — rest, study and support matter most.","Slow down this month; learning, mentors and recovery refuel you.","A gentle month for refilling your tank rather than pushing hard.","Lean on your support system and invest in learning; growth is quiet but real."],
+   es:["Un mes nutritivo y hacia adentro: el descanso, el estudio y el apoyo son lo más importante.","Baja el ritmo este mes; el aprendizaje, los mentores y la recuperación te recargan.","Un mes suave para llenar el tanque en vez de forzar.","Apóyate en tu red e invierte en aprender; el crecimiento es silencioso pero real."]}}
 };
+const MONTH_FLAVOR=[
+ {en:"As the year begins, set clear intentions and lay foundations before you sprint — what you plant now shapes the whole year.",es:"Al empezar el año, fija intenciones claras y pon cimientos antes de correr — lo que siembras ahora marca todo el año."},
+ {en:"Choose your single biggest focus for the year and commit to it — momentum is just starting to stir.",es:"Elige tu único foco más importante del año y comprométete — el impulso apenas empieza a moverse."},
+ {en:"As spring opens up, start, launch and put yourself out there; this is a month for bold first moves.",es:"Cuando la primavera abre, empieza, lanza y muéstrate; es un mes para primeros movimientos audaces."},
+ {en:"Turn your early starts into steady, consistent progress — show up daily and let it compound.",es:"Convierte tus inicios en progreso constante — preséntate a diario y deja que se acumule."},
+ {en:"Energy peaks with the warm season — be visible, connect with people and make your key move now.",es:"La energía sube con el calor — hazte visible, conecta con la gente y haz tu movimiento clave ahora."},
+ {en:"At the year's midpoint, push hard on your biggest goal while momentum is firmly on your side.",es:"En la mitad del año, empuja fuerte tu meta más grande mientras el impulso te acompaña con fuerza."},
+ {en:"In the slower heat of summer, consolidate what you've built, rest a little and guard your health.",es:"En el calor lento del verano, consolida lo construido, descansa un poco y cuida tu salud."},
+ {en:"A turning point toward focus — tidy loose ends, cut distractions and sharpen your priorities.",es:"Un punto de giro hacia el foco — cierra cabos sueltos, corta distracciones y afina prioridades."},
+ {en:"A disciplined, productive stretch — lean on structure and routines, and follow through on what you promised.",es:"Una etapa disciplinada y productiva — apóyate en la estructura y las rutinas, y cumple lo que prometiste."},
+ {en:"A harvesting month — collect your results, review what worked and adjust your course for the finish.",es:"Un mes de cosecha — recoge tus resultados, revisa lo que funcionó y ajusta el rumbo para el cierre."},
+ {en:"As the year turns inward, go deeper, save more and quietly prepare for what's closing out.",es:"Cuando el año se vuelve hacia adentro, profundiza, ahorra más y prepárate en calma para lo que cierra."},
+ {en:"In the year's wind-down, rest, reconnect with the people you love and set the stage for next year.",es:"En el cierre del año, descansa, reconéctate con quienes amas y prepara el escenario para el próximo año."}
+];
 function monthlyFortune(d){
-  var L=LANG, rateIcon={good:'🟢',ok:'🟡',watch:'🟠'};
-  var rows=MONTHS_2026.map(function(mo){
-    var th=MONTH_THEME[tenGod(d.el,mo.el)];
-    return `<div class="moRow"><div class="moHead"><span class="moName">${mo.m[L]}</span><span class="moTag ${th.rate}">${rateIcon[th.rate]} ${th.label[L]}</span></div><p class="moTxt">${th.txt[L]}</p></div>`;
+  var L=LANG, rateIcon={good:'🟢',ok:'🟡',watch:'🟠'}, seen={};
+  var rows=MONTHS_2026.map(function(mo,i){
+    var force=tenGod(d.el,mo.el), th=MONTH_THEME[force];
+    var n=(seen[force]||0); seen[force]=n+1;
+    var lead=th.lead[L][n % th.lead[L].length];
+    var txt=lead+' '+MONTH_FLAVOR[i][L];
+    return `<div class="moRow"><div class="moHead"><span class="moName">${mo.m[L]}</span><span class="moTag ${th.rate}">${rateIcon[th.rate]} ${th.label[L]}</span></div><p class="moTxt">${txt}</p></div>`;
   }).join('');
   var best=MONTHS_2026.filter(function(mo){var f=tenGod(d.el,mo.el);return f==='wealth'||f==='output';}).map(function(mo){return mo.m[L];});
   var watch=MONTHS_2026.filter(function(mo){return tenGod(d.el,mo.el)==='power';}).map(function(mo){return mo.m[L];});
